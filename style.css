@@ -1,0 +1,491 @@
+/* ===== 기본 & 변수 ===== */
+:root {
+  --ocean-deep: #0a1628;
+  --ocean-mid: #0d2137;
+  --ocean-light: #1a3a52;
+  --ocean-surface: #2a5a7a;
+  --foam: rgba(255, 255, 255, 0.08);
+  --accent: #4ecdc4;
+  --accent-hover: #45b7aa;
+  --text: #e8f4f8;
+  --shadow: rgba(0, 0, 0, 0.3);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  height: 100%;
+  overflow: hidden;
+  font-family: 'Segoe UI', 'Apple SD Gothic Neo', sans-serif;
+  color: var(--text);
+  background: var(--ocean-deep);
+}
+
+/* ===== 화면 전환 ===== */
+.screen {
+  position: fixed;
+  inset: 0;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.5s ease;
+}
+
+.screen.active {
+  display: flex;
+  opacity: 1;
+  z-index: 2;
+}
+
+.screen.leaving {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* ===== 바다 배경 (공통) ===== */
+.ocean-bg {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg,
+    var(--ocean-surface) 0%,
+    var(--ocean-light) 25%,
+    var(--ocean-mid) 50%,
+    var(--ocean-deep) 100%);
+  overflow: hidden;
+}
+
+.wave {
+  position: absolute;
+  left: -10%;
+  right: -10%;
+  height: 120px;
+  background: var(--foam);
+  border-radius: 50%;
+  animation: wave 8s ease-in-out infinite;
+}
+
+.wave1 { bottom: 15%; opacity: 0.6; animation-delay: 0s; }
+.wave2 { bottom: 10%; opacity: 0.4; animation-delay: -2s; animation-duration: 10s; }
+.wave3 { bottom: 5%;  opacity: 0.3; animation-delay: -4s; animation-duration: 12s; }
+
+@keyframes wave {
+  0%, 100% { transform: translateX(0) scaleY(1); }
+  50% { transform: translateX(5%) scaleY(1.1); }
+}
+
+/* 파라랙스 레이어 (바다 장면) */
+.ocean-scene .parallax-layer {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  opacity: 0.15;
+}
+
+.layer-far {
+  background-image: radial-gradient(ellipse at 50% 80%, var(--ocean-light) 0%, transparent 60%);
+  animation: parallax-slow 20s ease-in-out infinite;
+}
+
+.layer-mid {
+  background-image: radial-gradient(ellipse at 30% 70%, var(--ocean-surface) 0%, transparent 50%);
+  animation: parallax-slow 15s ease-in-out infinite reverse;
+}
+
+@keyframes parallax-slow {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(2%, 1%); }
+}
+
+/* ===== 바다 속 장식 (돌, 불가사리, 미역, 공기 방울) ===== */
+.ocean-deco {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+/* 돌 */
+.rock {
+  position: absolute;
+  bottom: 0;
+  background: linear-gradient(145deg, #2a3a45 0%, #1a252e 50%, #0f1619 100%);
+  border-radius: 45% 55% 50% 50% / 40% 50% 60% 50%;
+  box-shadow: inset -2px -2px 4px rgba(0,0,0,0.3);
+}
+.rock-1 { left: 5%; bottom: 2%; width: 50px; height: 28px; }
+.rock-2 { left: 18%; bottom: 0; width: 70px; height: 35px; border-radius: 50% 45% 55% 50%; }
+.rock-3 { left: 42%; bottom: 1%; width: 45px; height: 25px; }
+.rock-4 { right: 22%; bottom: 0; width: 65px; height: 32px; border-radius: 55% 50% 45% 50%; }
+.rock-5 { right: 6%; bottom: 3%; width: 55px; height: 30px; }
+
+/* 불가사리 */
+.starfish {
+  position: absolute;
+  bottom: 0;
+  width: 28px;
+  height: 28px;
+  background: radial-gradient(circle at 30% 30%, #e8a87c, #c38d6a 40%, #a66b4a);
+  clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+  opacity: 0.9;
+}
+.starfish-1 { left: 12%; bottom: 4%; transform: scale(0.9) rotate(-15deg); }
+.starfish-2 { left: 35%; bottom: 3%; transform: scale(1.1) rotate(8deg); }
+.starfish-3 { right: 15%; bottom: 5%; transform: scale(0.85) rotate(20deg); }
+
+/* 미역 (해초) */
+.seaweed {
+  position: absolute;
+  bottom: 0;
+  width: 12px;
+  height: 80px;
+  background: linear-gradient(to top, #1a4d2e 0%, #2d6a3e 30%, #3d8b52 70%, #4fa366 100%);
+  border-radius: 50%;
+  transform-origin: bottom center;
+  animation: seaweed-sway 4s ease-in-out infinite;
+}
+.seaweed-1 { left: 8%; height: 70px; animation-delay: 0s; opacity: 0.85; }
+.seaweed-2 { left: 25%; height: 95px; animation-delay: -0.8s; opacity: 0.9; }
+.seaweed-3 { left: 55%; height: 65px; animation-delay: -1.5s; opacity: 0.8; }
+.seaweed-4 { right: 28%; height: 88px; animation-delay: -2.2s; opacity: 0.88; }
+.seaweed-5 { right: 10%; height: 75px; animation-delay: -0.3s; opacity: 0.82; }
+@keyframes seaweed-sway {
+  0%, 100% { transform: skewX(-3deg) rotate(-5deg); }
+  50% { transform: skewX(4deg) rotate(8deg); }
+}
+
+/* 공기 방울 */
+.bubble {
+  position: absolute;
+  bottom: -20px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.5), rgba(200,230,255,0.15));
+  border: 1px solid rgba(255,255,255,0.25);
+  animation: bubble-rise 8s ease-in infinite;
+}
+.bubble-1 { left: 15%; width: 8px; height: 8px; animation-duration: 7s; animation-delay: 0s; }
+.bubble-2 { left: 30%; width: 12px; height: 12px; animation-duration: 9s; animation-delay: -2s; }
+.bubble-3 { left: 48%; width: 6px; height: 6px; animation-duration: 6s; animation-delay: -1s; }
+.bubble-4 { left: 62%; width: 10px; height: 10px; animation-duration: 8.5s; animation-delay: -3.5s; }
+.bubble-5 { left: 78%; width: 7px; height: 7px; animation-duration: 7.5s; animation-delay: -4s; }
+.bubble-6 { left: 22%; width: 5px; height: 5px; animation-duration: 10s; animation-delay: -5s; }
+.bubble-7 { left: 70%; width: 9px; height: 9px; animation-duration: 6.5s; animation-delay: -6s; }
+.bubble-8 { left: 88%; width: 6px; height: 6px; animation-duration: 8s; animation-delay: -2.5s; }
+@keyframes bubble-rise {
+  0% { transform: translateY(0) scale(1); opacity: 0.6; }
+  15% { opacity: 0.8; }
+  85% { opacity: 0.4; }
+  100% { transform: translateY(-120vh) scale(0.6); opacity: 0; }
+}
+
+/* ===== 시작 화면 ===== */
+.start-content {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  padding: 2rem;
+}
+
+.title {
+  font-size: clamp(1.8rem, 5vw, 2.8rem);
+  font-weight: 300;
+  letter-spacing: 0.05em;
+  margin-bottom: 2.5rem;
+  text-shadow: 0 2px 20px var(--shadow);
+}
+
+.btn-draw {
+  padding: 1rem 2.5rem;
+  font-size: 1.2rem;
+  letter-spacing: 0.15em;
+  color: var(--ocean-deep);
+  background: var(--accent);
+  border: none;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: transform 0.2s, background 0.2s;
+  box-shadow: 0 4px 20px var(--shadow);
+}
+
+.btn-draw:hover {
+  background: var(--accent-hover);
+  transform: scale(1.05);
+}
+
+.btn-draw:active {
+  transform: scale(0.98);
+}
+
+/* ===== 그리기 화면 ===== */
+#draw-screen {
+  justify-content: flex-start;
+  padding-top: env(safe-area-inset-top);
+}
+
+.draw-header {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+  max-width: 500px;
+  padding: 1rem 1.5rem;
+}
+
+.btn-back {
+  width: 44px;
+  height: 44px;
+  font-size: 1.5rem;
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-back:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.draw-header h2 {
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+.draw-tools {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  padding: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.pencils {
+  display: flex;
+  gap: 6px;
+  padding: 8px 12px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 999px;
+}
+
+.pencil {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  background: var(--pencil-color);
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.pencil:hover {
+  transform: scale(1.1);
+}
+
+.pencil.active {
+  border-color: white;
+  box-shadow: 0 0 0 2px var(--ocean-deep);
+}
+
+.pen-sizes {
+  display: flex;
+  gap: 4px;
+  padding: 6px 10px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 12px;
+}
+
+.pen-size {
+  padding: 6px 10px;
+  font-size: 0.85rem;
+  color: var(--text);
+  background: transparent;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.pen-size:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.pen-size.active {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.eraser {
+  width: 44px;
+  height: 44px;
+  font-size: 1.4rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.15);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s;
+}
+
+.eraser:hover,
+.eraser.active {
+  background: rgba(255, 255, 255, 0.25);
+  transform: scale(1.05);
+}
+
+.canvas-wrap {
+  position: relative;
+  z-index: 5;
+  padding: 1rem;
+  margin: 0 auto;
+}
+
+#draw-canvas {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px var(--shadow);
+  cursor: crosshair;
+  touch-action: none;
+}
+
+.fish-guide-overlay {
+  position: absolute;
+  top: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 400px;
+  height: 300px;
+  max-width: calc(100% - 2rem);
+  pointer-events: none;
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.fish-guide-svg {
+  width: 100%;
+  height: 100%;
+  color: rgba(0, 0, 0, 0.28);
+}
+
+.draw-actions {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  padding: 1.5rem;
+}
+
+.btn-secondary {
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.btn-primary {
+  padding: 0.75rem 2rem;
+  font-size: 1rem;
+  letter-spacing: 0.1em;
+  color: var(--ocean-deep);
+  background: var(--accent);
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: transform 0.2s, background 0.2s;
+}
+
+.btn-primary:hover {
+  background: var(--accent-hover);
+  transform: scale(1.03);
+}
+
+/* ===== 바다 장면 (물고기들) ===== */
+#fish-container {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+}
+
+.fish-sprite {
+  position: absolute;
+  will-change: transform;
+  transform-origin: center center;
+  pointer-events: none;
+}
+
+.fish-sprite img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.25));
+}
+
+.ocean-actions {
+  position: absolute;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+}
+
+.btn-draw.again {
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+}
+
+/* ===== 반응형 ===== */
+@media (max-width: 480px) {
+  .draw-tools {
+    gap: 0.75rem;
+  }
+
+  .pencil {
+    width: 28px;
+    height: 28px;
+  }
+
+  #draw-canvas {
+    width: 100%;
+    max-width: 340px;
+    height: auto;
+  }
+
+  .draw-actions {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+}
+
+/* 로딩 상태 */
+.loading .btn-primary {
+  opacity: 0.7;
+  pointer-events: none;
+}

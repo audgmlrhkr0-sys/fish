@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Make Your Own Fish!</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- 1. 시작 화면 -->
+  <section id="start-screen" class="screen active">
+    <div class="ocean-bg">
+      <div class="wave wave1"></div>
+      <div class="wave wave2"></div>
+      <div class="wave wave3"></div>
+    </div>
+    <div class="start-content">
+      <h1 class="title">Make Your Own Fish!</h1>
+      <button type="button" class="btn-draw" id="btn-draw">DRAW</button>
+    </div>
+  </section>
+
+  <!-- 2. 그리기 화면 -->
+  <section id="draw-screen" class="screen">
+    <div class="draw-header">
+      <button type="button" class="btn-back" id="btn-back" aria-label="뒤로">←</button>
+      <h2>물고기를 그려보세요</h2>
+    </div>
+    <div class="draw-tools">
+      <div class="pencils">
+        <button type="button" class="pencil active" data-color="#e74c3c" style="--pencil-color:#e74c3c" title="빨강"></button>
+        <button type="button" class="pencil" data-color="#e67e22" style="--pencil-color:#e67e22" title="주황"></button>
+        <button type="button" class="pencil" data-color="#f1c40f" style="--pencil-color:#f1c40f" title="노랑"></button>
+        <button type="button" class="pencil" data-color="#2ecc71" style="--pencil-color:#2ecc71" title="초록"></button>
+        <button type="button" class="pencil" data-color="#3498db" style="--pencil-color:#3498db" title="파랑"></button>
+        <button type="button" class="pencil" data-color="#2c3e50" style="--pencil-color:#2c3e50" title="남색"></button>
+        <button type="button" class="pencil" data-color="#9b59b6" style="--pencil-color:#9b59b6" title="보라"></button>
+      </div>
+      <div class="pen-sizes" title="펜 굵기">
+        <button type="button" class="pen-size active" data-size="2" title="얇게">얇게</button>
+        <button type="button" class="pen-size" data-size="5" title="보통">보통</button>
+        <button type="button" class="pen-size" data-size="10" title="굵게">굵게</button>
+      </div>
+      <button type="button" class="eraser" id="btn-eraser" title="지우개">🧽</button>
+    </div>
+    <div class="canvas-wrap">
+      <canvas id="draw-canvas" width="400" height="300"></canvas>
+      <div class="fish-guide-overlay" aria-hidden="true">
+        <svg viewBox="0 0 400 300" class="fish-guide-svg">
+          <ellipse cx="200" cy="150" rx="118" ry="40" fill="none" stroke="currentColor" stroke-width="2"/>
+          <path d="M318 150 L388 105 L388 195 Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+          <circle cx="108" cy="150" r="10" fill="none" stroke="currentColor" stroke-width="2"/>
+        </svg>
+      </div>
+    </div>
+    <div class="draw-actions">
+      <button type="button" class="btn-secondary" id="btn-clear">지우기</button>
+      <button type="button" class="btn-primary" id="btn-create-fish">CREATE FISH</button>
+    </div>
+  </section>
+
+  <!-- 3. 공유 바다 화면 -->
+  <section id="ocean-screen" class="screen">
+    <div class="ocean-bg ocean-scene">
+      <div class="wave wave1"></div>
+      <div class="wave wave2"></div>
+      <div class="wave wave3"></div>
+      <div class="parallax-layer layer-far"></div>
+      <div class="parallax-layer layer-mid"></div>
+      <!-- 바다 속 장식: 돌, 불가사리, 미역, 공기 방울 -->
+      <div class="ocean-deco" aria-hidden="true">
+        <div class="rock rock-1"></div>
+        <div class="rock rock-2"></div>
+        <div class="rock rock-3"></div>
+        <div class="rock rock-4"></div>
+        <div class="rock rock-5"></div>
+        <div class="starfish starfish-1"></div>
+        <div class="starfish starfish-2"></div>
+        <div class="starfish starfish-3"></div>
+        <div class="seaweed seaweed-1"></div>
+        <div class="seaweed seaweed-2"></div>
+        <div class="seaweed seaweed-3"></div>
+        <div class="seaweed seaweed-4"></div>
+        <div class="seaweed seaweed-5"></div>
+        <div class="bubble bubble-1"></div>
+        <div class="bubble bubble-2"></div>
+        <div class="bubble bubble-3"></div>
+        <div class="bubble bubble-4"></div>
+        <div class="bubble bubble-5"></div>
+        <div class="bubble bubble-6"></div>
+        <div class="bubble bubble-7"></div>
+        <div class="bubble bubble-8"></div>
+      </div>
+      <div id="fish-container"></div>
+    </div>
+    <div class="ocean-actions">
+      <button type="button" class="btn-draw again" id="btn-draw-again">다시 그리기</button>
+    </div>
+  </section>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="app.js"></script>
+</body>
+</html>
