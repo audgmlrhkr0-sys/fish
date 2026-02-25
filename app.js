@@ -9,7 +9,7 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 const BUCKET_NAME = 'fish-images';
 const TABLE_NAME = 'fish-ocean';
 
-var isExhibitMode = /[?&](?:mode=exhibit|exhibit)(?:&|$)/i.test(location.search || '');
+var isExhibitMode = /[?&](?:mode=exhibit|exhibit)(?:&|$)/i.test(location.search || '') || (typeof sessionStorage !== 'undefined' && sessionStorage.getItem('exhibitMode') === '1');
 
 // Supabase 클라이언트 (키가 설정된 경우에만 초기화, CDN 전역 'supabase'와 이름 충돌 방지)
 var supabaseClient = null;
@@ -468,28 +468,47 @@ var oceanObserver = new MutationObserver(function (mutations) {
 if (oceanScreen) oceanObserver.observe(oceanScreen, { attributes: true, attributeFilter: ['class'] });
 
 var exhibitModeOn = isExhibitMode;
-var exhibitRefreshInterval = null;
+var exhibitRefreshTimeout = null;
 var EXHIBIT_REFRESH_SEC = 10;
+
+function startExhibitAutoRefresh() {
+  if (exhibitRefreshTimeout) clearTimeout(exhibitRefreshTimeout);
+  exhibitRefreshTimeout = setTimeout(function () {
+    exhibitRefreshTimeout = null;
+    if (exhibitModeOn || isExhibitMode) sessionStorage.setItem('exhibitMode', '1');
+    location.reload();
+  }, EXHIBIT_REFRESH_SEC * 1000);
+}
+
+function stopExhibitAutoRefresh() {
+  if (exhibitRefreshTimeout) {
+    clearTimeout(exhibitRefreshTimeout);
+    exhibitRefreshTimeout = null;
+  }
+}
 
 function setExhibitMode(on) {
   exhibitModeOn = on;
+  if (on) try { sessionStorage.setItem('exhibitMode', '1'); } catch (e) {}
+  else try { sessionStorage.removeItem('exhibitMode'); } catch (e) {}
   var btn = document.getElementById('mode-toggle-btn');
   if (btn) btn.textContent = on ? '✎' : '◐';
-  if (exhibitRefreshInterval) {
-    clearInterval(exhibitRefreshInterval);
-    exhibitRefreshInterval = null;
-  }
+  stopExhibitAutoRefresh();
   if (on) {
     document.body.classList.add('exhibit-mode');
     showScreen('ocean');
-    exhibitRefreshInterval = setInterval(function () {
-      location.reload();
-    }, EXHIBIT_REFRESH_SEC * 1000);
+    startExhibitAutoRefresh();
   } else {
     document.body.classList.remove('exhibit-mode');
     showScreen('start');
   }
 }
+
+document.addEventListener('visibilitychange', function () {
+  if (document.visibilityState === 'visible' && (exhibitModeOn || isExhibitMode)) {
+    location.reload();
+  }
+});
 
 // ========== 버튼 연결 (DOM 준비 후 실행) ==========
 function initApp() {
@@ -507,9 +526,7 @@ function initApp() {
     document.body.classList.add('exhibit-mode');
     showScreen('ocean');
     enterOceanScreen();
-    exhibitRefreshInterval = setInterval(function () {
-      location.reload();
-    }, EXHIBIT_REFRESH_SEC * 1000);
+    startExhibitAutoRefresh();
     return;
   }
 
