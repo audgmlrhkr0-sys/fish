@@ -471,12 +471,19 @@ var exhibitModeOn = isExhibitMode;
 var exhibitRefreshTimeout = null;
 var EXHIBIT_REFRESH_SEC = 10;
 
+function refreshExhibitFish() {
+  if (!fishContainer) return;
+  fishContainer.innerHTML = '';
+  fishInstances.clear();
+  loadAllFish();
+}
+
 function startExhibitAutoRefresh() {
   if (exhibitRefreshTimeout) clearTimeout(exhibitRefreshTimeout);
   exhibitRefreshTimeout = setTimeout(function () {
     exhibitRefreshTimeout = null;
-    if (exhibitModeOn || isExhibitMode) sessionStorage.setItem('exhibitMode', '1');
-    location.reload();
+    refreshExhibitFish();
+    startExhibitAutoRefresh();
   }, EXHIBIT_REFRESH_SEC * 1000);
 }
 
@@ -506,7 +513,7 @@ function setExhibitMode(on) {
 
 document.addEventListener('visibilitychange', function () {
   if (document.visibilityState === 'visible' && (exhibitModeOn || isExhibitMode)) {
-    location.reload();
+    refreshExhibitFish();
   }
 });
 
