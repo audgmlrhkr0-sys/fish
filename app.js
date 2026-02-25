@@ -420,7 +420,7 @@ function subscribeNewFish() {
       var row = payload.new;
       if (!row || !row.image_url) return;
       if (isExhibitMode || exhibitModeOn) {
-        location.reload();
+        refreshExhibitFish();
         return;
       }
       if (!fishInstances.has(row.id)) addFishToOcean(row.image_url, row);
@@ -468,8 +468,6 @@ var oceanObserver = new MutationObserver(function (mutations) {
 if (oceanScreen) oceanObserver.observe(oceanScreen, { attributes: true, attributeFilter: ['class'] });
 
 var exhibitModeOn = isExhibitMode;
-var exhibitRefreshTimeout = null;
-var EXHIBIT_REFRESH_SEC = 10;
 
 function refreshExhibitFish() {
   if (!fishContainer) return;
@@ -478,44 +476,20 @@ function refreshExhibitFish() {
   loadAllFish();
 }
 
-function startExhibitAutoRefresh() {
-  if (exhibitRefreshTimeout) clearTimeout(exhibitRefreshTimeout);
-  exhibitRefreshTimeout = setTimeout(function () {
-    exhibitRefreshTimeout = null;
-    refreshExhibitFish();
-    startExhibitAutoRefresh();
-  }, EXHIBIT_REFRESH_SEC * 1000);
-}
-
-function stopExhibitAutoRefresh() {
-  if (exhibitRefreshTimeout) {
-    clearTimeout(exhibitRefreshTimeout);
-    exhibitRefreshTimeout = null;
-  }
-}
-
 function setExhibitMode(on) {
   exhibitModeOn = on;
   if (on) try { sessionStorage.setItem('exhibitMode', '1'); } catch (e) {}
   else try { sessionStorage.removeItem('exhibitMode'); } catch (e) {}
   var btn = document.getElementById('mode-toggle-btn');
   if (btn) btn.textContent = on ? '✎' : '◐';
-  stopExhibitAutoRefresh();
   if (on) {
     document.body.classList.add('exhibit-mode');
     showScreen('ocean');
-    startExhibitAutoRefresh();
   } else {
     document.body.classList.remove('exhibit-mode');
     showScreen('start');
   }
 }
-
-document.addEventListener('visibilitychange', function () {
-  if (document.visibilityState === 'visible' && (exhibitModeOn || isExhibitMode)) {
-    refreshExhibitFish();
-  }
-});
 
 // ========== 버튼 연결 (DOM 준비 후 실행) ==========
 function initApp() {
@@ -533,7 +507,6 @@ function initApp() {
     document.body.classList.add('exhibit-mode');
     showScreen('ocean');
     enterOceanScreen();
-    startExhibitAutoRefresh();
     return;
   }
 
