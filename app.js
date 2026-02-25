@@ -1,12 +1,15 @@
 /**
  * Make Your Own Fish! - 공유 바다 물고기 앱
- * Supabase URL과 anon key를 아래에 입력하세요.
+ * - 그리기 모드: index.html (아이패드에서 물고기 그리기)
+ * - 전시 모드: index.html?mode=exhibit (모니터에서 결과물만 표시)
  */
-const SUPABASE_URL = 'YOUR_SUPABASE_URL';
-const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
+const SUPABASE_URL = 'https://kgzuoxttqqgnakygdkgo.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtnenVveHR0cXFnbmFreWdka2dvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA4Mjk1MTksImV4cCI6MjA4NjQwNTUxOX0.5R_EwKJ_zb7YBPcmOBYMfYQh7Oom0c4GAT3YqQhnzwY';
 
 const BUCKET_NAME = 'fish-images';
-const TABLE_NAME = 'fish';
+const TABLE_NAME = 'fish-ocean';
+
+var isExhibitMode = /[?&](?:mode=exhibit|exhibit)(?:&|$)/i.test(location.search || '');
 
 // Supabase 클라이언트 (키가 설정된 경우에만 초기화, CDN 전역 'supabase'와 이름 충돌 방지)
 var supabaseClient = null;
@@ -184,9 +187,26 @@ function canvasToDataUrlTransparentBg() {
   return off.toDataURL('image/png');
 }
 
-function canvasToBlob() {
+/** 흰 배경 제거한 캔버스를 Blob으로 (Supabase 업로드용) */
+function canvasToBlobTransparentBg() {
+  var w = canvas.width;
+  var h = canvas.height;
+  var off = document.createElement('canvas');
+  off.width = w;
+  off.height = h;
+  var ctxOff = off.getContext('2d');
+  ctxOff.drawImage(canvas, 0, 0);
+  var imgData = ctxOff.getImageData(0, 0, w, h);
+  var d = imgData.data;
+  for (var i = 0; i < d.length; i += 4) {
+    var r = d[i];
+    var g = d[i + 1];
+    var b = d[i + 2];
+    if (r >= 248 && g >= 248 && b >= 248) d[i + 3] = 0;
+  }
+  ctxOff.putImageData(imgData, 0, 0);
   return new Promise(function (resolve) {
-    canvas.toBlob(resolve, 'image/png', 0.9);
+    off.toBlob(resolve, 'image/png', 0.9);
   });
 }
 
@@ -221,8 +241,8 @@ async function createFish() {
   }
 
   try {
-    const blob = await canvasToBlob();
-    const fileName = `fish_${Date.now()}_${Math.random().toString(36).slice(2, 9)}.png`;
+    var blob = await canvasToBlobTransparentBg();
+    var fileName = 'fish_' + Date.now() + '_' + Math.random().toString(36).slice(2, 9) + '.png';
 
     const { data: uploadData, error: uploadError } = await supabaseClient.storage
       .from(BUCKET_NAME)
@@ -347,7 +367,8 @@ function animateFish() {
     fish.y = y;
     fish.phase = phase;
 
-    var dir = vx >= 0 ? 1 : -1;
+    /* 가이드: 머리=왼쪽, 꼬리=오른쪽 → 진행 방향에 머리가 오도록 */
+    var dir = vx >= 0 ? -1 : 1;
     el.style.left = (x + wiggle) + 'px';
     el.style.top = (y + float) + 'px';
     el.style.transform = 'scaleX(' + dir + ') rotate(' + sway + 'deg)';
@@ -375,9 +396,14 @@ function subscribeNewFish() {
   if (!supabaseClient) return;
   supabaseClient
     .channel('fish-channel')
-    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: TABLE_NAME }, (payload) => {
-      const row = payload.new;
-      if (row && row.image_url && !fishInstances.has(row.id)) addFishToOcean(row.image_url, row);
+    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: TABLE_NAME }, function (payload) {
+      var row = payload.new;
+      if (!row || !row.image_url) return;
+      if (isExhibitMode) {
+        location.reload();
+        return;
+      }
+      if (!fishInstances.has(row.id)) addFishToOcean(row.image_url, row);
     })
     .subscribe();
 }
@@ -408,8 +434,41 @@ const observer = new MutationObserver((mutations) => {
 });
 observer.observe(oceanScreen, { attributes: true, attributeFilter: ['class'] });
 
+var exhibitModeOn = isExhibitMode;
+
+function setExhibitMode(on) {
+  exhibitModeOn = on;
+  var btn = document.getElementById('mode-toggle-btn');
+  if (btn) btn.textContent = on ? '✎' : '◐';
+  if (on) {
+    document.body.classList.add('exhibit-mode');
+    showScreen('ocean');
+    enterOceanScreen();
+  } else {
+    document.body.classList.remove('exhibit-mode');
+    showScreen('start');
+  }
+}
+
 // ========== 버튼 연결 (DOM 준비 후 실행) ==========
 function initApp() {
+  var modeToggle = document.getElementById('mode-toggle-btn');
+  if (modeToggle) {
+    modeToggle.textContent = exhibitModeOn ? '✎' : '◐';
+    modeToggle.title = exhibitModeOn ? '그리기 모드로' : '전시 모드로';
+    modeToggle.addEventListener('click', function () {
+      setExhibitMode(!exhibitModeOn);
+      modeToggle.title = exhibitModeOn ? '그리기 모드로' : '전시 모드로';
+    });
+  }
+
+  if (isExhibitMode) {
+    document.body.classList.add('exhibit-mode');
+    showScreen('ocean');
+    enterOceanScreen();
+    return;
+  }
+
   try {
     if (!sessionStorage.getItem('fish_tank_cleared')) {
       localStorage.removeItem(LOCAL_FISH_KEY);
