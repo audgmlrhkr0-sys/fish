@@ -234,7 +234,8 @@ async function createFish() {
       if (list.length > 1) list = list.slice(-1);
       localStorage.setItem(LOCAL_FISH_KEY, JSON.stringify(list));
     }
-    transitionTo('ocean');
+    transitionTo('draw');
+    initCanvas();
     btn.disabled = false;
     if (btn.closest('.draw-actions')) btn.closest('.draw-actions').classList.remove('loading');
     return;
@@ -273,8 +274,8 @@ async function createFish() {
       return;
     }
 
-    transitionTo('ocean');
-    // 바다 화면 진입 시 loadAllFish에서 새 물고기 포함해 불러옴
+    transitionTo('draw');
+    initCanvas();
   } catch (err) {
     console.error(err);
     alert('오류가 발생했습니다.');
@@ -328,6 +329,7 @@ function addFishToOcean(imageUrl, meta = {}) {
     vy,
     scale,
     phase: randomRange(0, Math.PI * 2),
+    phase2: randomRange(0, Math.PI * 2),
     width: fishContainer.offsetWidth,
     height: fishContainer.offsetHeight,
     size,
@@ -341,37 +343,55 @@ function animateFish() {
     var vx = fish.vx;
     var vy = fish.vy;
     var phase = fish.phase;
+    var phase2 = fish.phase2 || 0;
     var width = fish.width;
     var height = fish.height;
     var size = fish.size;
     var el = fish.el;
+    var margin = Math.max(size * 0.3, 12);
 
     x += vx;
     y += vy;
-    phase += 0.06;
-    var float = Math.sin(phase) * 4;
-    var sway = Math.sin(phase * 1.3) * 10;
-    var wiggle = Math.sin(phase * 2) * 3;
+    phase += 0.04;
+    phase2 += 0.03;
 
-    if (x < -size) x += width + size * 2;
-    if (x > width + size) x -= width + size * 2;
-    if (y < -size) y += height + size * 2;
-    if (y > height + size) y -= height + size * 2;
-    if (Math.random() < 0.012) {
-      vx = -vx;
-      vy = vy + (Math.random() - 0.5) * 0.08;
+    if (x < margin) {
+      vx = Math.abs(vx) * 0.95;
+      x = margin;
     }
+    if (x > width - margin) {
+      vx = -Math.abs(vx) * 0.95;
+      x = width - margin;
+    }
+    if (y < margin) {
+      vy = Math.abs(vy) * 0.95;
+      y = margin;
+    }
+    if (y > height - margin) {
+      vy = -Math.abs(vy) * 0.95;
+      y = height - margin;
+    }
+    if (Math.random() < 0.006) {
+      vx = -vx;
+      vy = vy + (Math.random() - 0.5) * 0.06;
+    }
+
     fish.vx = vx;
     fish.vy = vy;
     fish.x = x;
     fish.y = y;
     fish.phase = phase;
+    fish.phase2 = phase2;
 
-    /* 가이드: 머리=왼쪽, 꼬리=오른쪽 → 진행 방향에 머리가 오도록 */
+    var float = Math.sin(phase) * 2.5 + Math.sin(phase2 * 1.7) * 1.2;
+    var sway = Math.sin(phase * 0.9) * 5 + Math.sin(phase * 2.1) * 3;
+    var wiggle = Math.sin(phase * 1.8) * 1.5;
+    var breath = 1 + Math.sin(phase * 1.2) * 0.02;
+
     var dir = vx >= 0 ? -1 : 1;
     el.style.left = (x + wiggle) + 'px';
     el.style.top = (y + float) + 'px';
-    el.style.transform = 'scaleX(' + dir + ') rotate(' + sway + 'deg)';
+    el.style.transform = 'scaleX(' + dir + ') scale(' + breath + ') rotate(' + sway + 'deg)';
   });
   requestAnimationFrame(animateFish);
 }
@@ -399,7 +419,7 @@ function subscribeNewFish() {
     .on('postgres_changes', { event: 'INSERT', schema: 'public', table: TABLE_NAME }, function (payload) {
       var row = payload.new;
       if (!row || !row.image_url) return;
-      if (isExhibitMode) {
+      if (isExhibitMode || exhibitModeOn) {
         location.reload();
         return;
       }
@@ -427,12 +447,15 @@ function enterOceanScreen() {
   requestAnimationFrame(animateFish);
 }
 
-// 바다 화면 진입 시 한 번 로드
-const oceanScreen = document.getElementById('ocean-screen');
-const observer = new MutationObserver((mutations) => {
-  if (oceanScreen.classList.contains('active')) enterOceanScreen();
+// 바다 화면 진입 시 한 번 로드 (active가 추가될 때만 호출해 중복 방지)
+var oceanScreen = document.getElementById('ocean-screen');
+var oceanObserver = new MutationObserver(function (mutations) {
+  var added = mutations.some(function (m) {
+    return m.attributeName === 'class' && m.target.classList.contains('active');
+  });
+  if (added) enterOceanScreen();
 });
-observer.observe(oceanScreen, { attributes: true, attributeFilter: ['class'] });
+if (oceanScreen) oceanObserver.observe(oceanScreen, { attributes: true, attributeFilter: ['class'] });
 
 var exhibitModeOn = isExhibitMode;
 
@@ -443,7 +466,7 @@ function setExhibitMode(on) {
   if (on) {
     document.body.classList.add('exhibit-mode');
     showScreen('ocean');
-    enterOceanScreen();
+    /* enterOceanScreen은 observer가 ocean 활성화 시 한 번만 호출 */
   } else {
     document.body.classList.remove('exhibit-mode');
     showScreen('start');
