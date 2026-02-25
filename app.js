@@ -319,6 +319,7 @@ function addFishToOcean(imageUrl, meta = {}) {
 
   fishContainer.appendChild(wrap);
 
+  var created_at = meta.created_at || new Date().toISOString();
   fishInstances.set(id, {
     el: wrap,
     x,
@@ -331,7 +332,29 @@ function addFishToOcean(imageUrl, meta = {}) {
     width: fishContainer.offsetWidth,
     height: fishContainer.offsetHeight,
     size,
+    created_at: created_at,
   });
+  trimFishToMax(30);
+}
+
+var FISH_MAX_COUNT = 30;
+
+function trimFishToMax(maxCount) {
+  while (fishInstances.size > maxCount) {
+    var oldestId = null;
+    var oldestTime = Infinity;
+    fishInstances.forEach(function (fish, id) {
+      var t = fish.created_at ? new Date(fish.created_at).getTime() : 0;
+      if (t < oldestTime) {
+        oldestTime = t;
+        oldestId = id;
+      }
+    });
+    if (oldestId == null) break;
+    var fish = fishInstances.get(oldestId);
+    if (fish && fish.el && fish.el.parentNode) fish.el.parentNode.removeChild(fish.el);
+    fishInstances.delete(oldestId);
+  }
 }
 
 function animateFish() {
@@ -347,6 +370,7 @@ function animateFish() {
     var size = fish.size;
     var el = fish.el;
     var margin = Math.max(size * 0.3, 12);
+    var bottomLimit = height * 0.88 - margin;
 
     x += vx;
     y += vy;
@@ -365,9 +389,9 @@ function animateFish() {
       vy = Math.abs(vy) * 0.95;
       y = margin;
     }
-    if (y > height - margin) {
+    if (y > bottomLimit) {
       vy = -Math.abs(vy) * 0.95;
-      y = height - margin;
+      y = bottomLimit;
     }
     if (Math.random() < 0.006) {
       vx = -vx;
@@ -400,7 +424,7 @@ function loadAllFish() {
     .from(TABLE_NAME)
     .select('id, image_url, created_at')
     .order('created_at', { ascending: false })
-    .limit(50)
+    .limit(FISH_MAX_COUNT)
     .then(({ data, error }) => {
       if (error) {
         console.warn('Load fish error:', error);
