@@ -438,13 +438,23 @@ function loadLocalFish() {
   });
 }
 
+var enterOceanDebounceTimer = null;
+
 function enterOceanScreen() {
-  fishContainer.innerHTML = '';
-  fishInstances.clear();
-  loadLocalFish();
-  loadAllFish();
-  subscribeNewFish();
-  requestAnimationFrame(animateFish);
+  if (enterOceanDebounceTimer) return;
+  enterOceanDebounceTimer = setTimeout(function () {
+    enterOceanDebounceTimer = null;
+    fishContainer.innerHTML = '';
+    fishInstances.clear();
+    if (exhibitModeOn || isExhibitMode) {
+      loadAllFish();
+    } else {
+      loadLocalFish();
+      loadAllFish();
+    }
+    subscribeNewFish();
+    requestAnimationFrame(animateFish);
+  }, 80);
 }
 
 // 바다 화면 진입 시 한 번 로드 (active가 추가될 때만 호출해 중복 방지)
@@ -458,15 +468,23 @@ var oceanObserver = new MutationObserver(function (mutations) {
 if (oceanScreen) oceanObserver.observe(oceanScreen, { attributes: true, attributeFilter: ['class'] });
 
 var exhibitModeOn = isExhibitMode;
+var exhibitRefreshInterval = null;
+var EXHIBIT_REFRESH_SEC = 10;
 
 function setExhibitMode(on) {
   exhibitModeOn = on;
   var btn = document.getElementById('mode-toggle-btn');
   if (btn) btn.textContent = on ? '✎' : '◐';
+  if (exhibitRefreshInterval) {
+    clearInterval(exhibitRefreshInterval);
+    exhibitRefreshInterval = null;
+  }
   if (on) {
     document.body.classList.add('exhibit-mode');
     showScreen('ocean');
-    /* enterOceanScreen은 observer가 ocean 활성화 시 한 번만 호출 */
+    exhibitRefreshInterval = setInterval(function () {
+      location.reload();
+    }, EXHIBIT_REFRESH_SEC * 1000);
   } else {
     document.body.classList.remove('exhibit-mode');
     showScreen('start');
@@ -489,6 +507,9 @@ function initApp() {
     document.body.classList.add('exhibit-mode');
     showScreen('ocean');
     enterOceanScreen();
+    exhibitRefreshInterval = setInterval(function () {
+      location.reload();
+    }, EXHIBIT_REFRESH_SEC * 1000);
     return;
   }
 
