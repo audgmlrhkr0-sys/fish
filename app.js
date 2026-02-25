@@ -420,12 +420,53 @@ function subscribeNewFish() {
       var row = payload.new;
       if (!row || !row.image_url) return;
       if (isExhibitMode || exhibitModeOn) {
+        try { sessionStorage.setItem('exhibitMode', '1'); } catch (e) {}
         location.reload();
         return;
       }
       if (!fishInstances.has(row.id)) addFishToOcean(row.image_url, row);
     })
     .subscribe();
+}
+
+var exhibitPollingTimer = null;
+var lastExhibitFishCount = -1;
+var EXHIBIT_POLL_SEC = 8;
+
+function startExhibitPolling() {
+  if (exhibitPollingTimer) return;
+  function poll() {
+    if (!supabaseClient || (!exhibitModeOn && !isExhibitMode)) {
+      stopExhibitPolling();
+      return;
+    }
+    supabaseClient
+      .from(TABLE_NAME)
+      .select('*', { count: 'exact', head: true })
+      .then(function (res) {
+        var count = res.count != null ? res.count : 0;
+        if (lastExhibitFishCount >= 0 && count > lastExhibitFishCount) {
+          try { sessionStorage.setItem('exhibitMode', '1'); } catch (e) {}
+          location.reload();
+          return;
+        }
+        lastExhibitFishCount = count;
+      })
+      .catch(function () {})
+      .finally(function () {
+        if (exhibitModeOn || isExhibitMode) {
+          exhibitPollingTimer = setTimeout(poll, EXHIBIT_POLL_SEC * 1000);
+        }
+      });
+  }
+  poll();
+}
+
+function stopExhibitPolling() {
+  if (exhibitPollingTimer) {
+    clearTimeout(exhibitPollingTimer);
+    exhibitPollingTimer = null;
+  }
 }
 
 function loadLocalFish() {
@@ -448,11 +489,13 @@ function enterOceanScreen() {
     fishInstances.clear();
     if (exhibitModeOn || isExhibitMode) {
       loadAllFish();
+      subscribeNewFish();
+      startExhibitPolling();
     } else {
       loadLocalFish();
       loadAllFish();
+      subscribeNewFish();
     }
-    subscribeNewFish();
     requestAnimationFrame(animateFish);
   }, 80);
 }
@@ -479,7 +522,10 @@ function refreshExhibitFish() {
 function setExhibitMode(on) {
   exhibitModeOn = on;
   if (on) try { sessionStorage.setItem('exhibitMode', '1'); } catch (e) {}
-  else try { sessionStorage.removeItem('exhibitMode'); } catch (e) {}
+  else {
+    try { sessionStorage.removeItem('exhibitMode'); } catch (e) {}
+    stopExhibitPolling();
+  }
   var btn = document.getElementById('mode-toggle-btn');
   if (btn) btn.textContent = on ? '✎' : '◐';
   if (on) {
