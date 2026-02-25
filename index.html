@@ -7,26 +7,31 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <!-- 1. 시작 화면 -->
-  <section id="start-screen" class="screen active">
+  <!-- 1. 시작 화면 (종이 접기 공방) -->
+  <section id="start-screen" class="screen active start-workshop">
     <div class="ocean-bg">
       <div class="wave wave1"></div>
       <div class="wave wave2"></div>
       <div class="wave wave3"></div>
     </div>
+    <div class="workshop-desk"></div>
     <div class="start-content">
-      <h1 class="title">Make Your Own Fish!</h1>
-      <button type="button" class="btn-draw" id="btn-draw">DRAW</button>
+      <div class="paper-card paper-fold">
+        <h1 class="title">Make Your Own Fish!</h1>
+        <p class="title-sub">종이에 물고기를 그려 보내요</p>
+        <button type="button" class="btn-draw" id="btn-draw">DRAW</button>
+      </div>
     </div>
   </section>
 
-  <!-- 2. 그리기 화면 -->
-  <section id="draw-screen" class="screen">
-    <div class="draw-header">
+  <!-- 2. 그리기 화면 (종이 접기 공방) -->
+  <section id="draw-screen" class="screen draw-workshop">
+    <div class="workshop-desk draw-desk"></div>
+    <div class="draw-header paper-tape">
       <button type="button" class="btn-back" id="btn-back" aria-label="뒤로">←</button>
       <h2>물고기를 그려보세요</h2>
     </div>
-    <div class="draw-tools">
+    <div class="draw-tools paper-tray">
       <div class="pencils">
         <button type="button" class="pencil active" data-color="#e74c3c" style="--pencil-color:#e74c3c" title="빨강"></button>
         <button type="button" class="pencil" data-color="#e67e22" style="--pencil-color:#e67e22" title="주황"></button>
@@ -43,7 +48,7 @@
       </div>
       <button type="button" class="eraser" id="btn-eraser" title="지우개">🧽</button>
     </div>
-    <div class="canvas-wrap">
+    <div class="canvas-wrap paper-sheet">
       <canvas id="draw-canvas" width="400" height="300"></canvas>
       <div class="fish-guide-overlay" aria-hidden="true">
         <svg viewBox="0 0 400 300" class="fish-guide-svg">
@@ -53,7 +58,7 @@
         </svg>
       </div>
     </div>
-    <div class="draw-actions">
+    <div class="draw-actions paper-tape">
       <button type="button" class="btn-secondary" id="btn-clear">지우기</button>
       <button type="button" class="btn-primary" id="btn-create-fish">CREATE FISH</button>
     </div>

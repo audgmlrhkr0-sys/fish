@@ -234,8 +234,7 @@ async function createFish() {
       if (list.length > 1) list = list.slice(-1);
       localStorage.setItem(LOCAL_FISH_KEY, JSON.stringify(list));
     }
-    transitionTo('draw');
-    initCanvas();
+    transitionTo('start');
     btn.disabled = false;
     if (btn.closest('.draw-actions')) btn.closest('.draw-actions').classList.remove('loading');
     return;
@@ -274,8 +273,7 @@ async function createFish() {
       return;
     }
 
-    transitionTo('draw');
-    initCanvas();
+    transitionTo('start');
   } catch (err) {
     console.error(err);
     alert('오류가 발생했습니다.');
