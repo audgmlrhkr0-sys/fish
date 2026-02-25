@@ -420,7 +420,7 @@ function subscribeNewFish() {
       var row = payload.new;
       if (!row || !row.image_url) return;
       if (isExhibitMode || exhibitModeOn) {
-        refreshExhibitFish();
+        location.reload();
         return;
       }
       if (!fishInstances.has(row.id)) addFishToOcean(row.image_url, row);
