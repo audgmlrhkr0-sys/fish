@@ -3,60 +3,72 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Make Your Own Fish!</title>
+  <title>나만의 물고기 그리기!</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <!-- 1. 시작 화면 (종이 접기 공방) -->
-  <section id="start-screen" class="screen active start-workshop">
-    <div class="ocean-bg">
-      <div class="wave wave1"></div>
-      <div class="wave wave2"></div>
-      <div class="wave wave3"></div>
+  <!-- 1. 시작 화면 (이카와 세이료 · 종이 공방) -->
+  <section id="start-screen" class="screen active start-ikawa">
+    <div class="start-bg"></div>
+    <div class="start-paper-texture" aria-hidden="true"></div>
+    <div class="start-stitch-deco" aria-hidden="true">
+      <span class="stitch-shape stitch-circle stitch-lg" style="--stitch-fill:#e74c3c; --stitch-stroke:#c0392b;"><svg viewBox="0 0 40 40" fill="var(--stitch-fill)" stroke="var(--stitch-stroke)" stroke-width="2" stroke-dasharray="4 3"><circle cx="20" cy="20" r="16"/></svg></span>
+      <span class="stitch-shape stitch-triangle stitch-md" style="--stitch-fill:#3498db; --stitch-stroke:#2980b9;"><svg viewBox="0 0 40 36" fill="var(--stitch-fill)" stroke="var(--stitch-stroke)" stroke-width="2" stroke-dasharray="4 3"><polygon points="20,4 36,32 4,32"/></svg></span>
+      <span class="stitch-shape stitch-square stitch-md" style="--stitch-fill:#2ecc71; --stitch-stroke:#27ae60;"><svg viewBox="0 0 40 40" fill="var(--stitch-fill)" stroke="var(--stitch-stroke)" stroke-width="2" stroke-dasharray="4 3"><rect x="4" y="4" width="32" height="32" rx="2"/></svg></span>
+      <span class="stitch-shape stitch-star stitch-lg" style="--stitch-fill:#f1c40f; --stitch-stroke:#d4ac0d;"><svg viewBox="0 0 40 40" fill="var(--stitch-fill)" stroke="var(--stitch-stroke)" stroke-width="2" stroke-dasharray="4 3"><path d="M20 4l4.5 9.2 10 1.5-7.2 7 1.7 10L20 27.6l-9 4.1 1.7-10-7.2-7 10-1.5L20 4z"/></svg></span>
+      <span class="stitch-shape stitch-heart stitch-md" style="--stitch-fill:#e91e63; --stitch-stroke:#c2185b;"><svg viewBox="0 0 40 36" fill="var(--stitch-fill)" stroke="var(--stitch-stroke)" stroke-width="2" stroke-dasharray="4 3"><path d="M20 32.5S4 22 4 13.2C4 8 7.6 4 12.2 4c3.2 0 5.8 2 7.8 5.2C21.8 6 24.6 4 27.8 4 32.4 4 36 8 36 13.2 36 22 20 32.5 20 32.5z"/></svg></span>
+      <span class="stitch-shape stitch-circle stitch-sm" style="--stitch-fill:#9b59b6; --stitch-stroke:#8e44ad;"><svg viewBox="0 0 40 40" fill="var(--stitch-fill)" stroke="var(--stitch-stroke)" stroke-width="2" stroke-dasharray="4 3"><circle cx="20" cy="20" r="16"/></svg></span>
+      <span class="stitch-shape stitch-triangle stitch-xl" style="--stitch-fill:#e67e22; --stitch-stroke:#d35400;"><svg viewBox="0 0 40 36" fill="var(--stitch-fill)" stroke="var(--stitch-stroke)" stroke-width="2" stroke-dasharray="4 3"><polygon points="20,4 36,32 4,32"/></svg></span>
+      <span class="stitch-shape stitch-square stitch-sm" style="--stitch-fill:#1abc9c; --stitch-stroke:#16a085;"><svg viewBox="0 0 40 40" fill="var(--stitch-fill)" stroke="var(--stitch-stroke)" stroke-width="2" stroke-dasharray="4 3"><rect x="4" y="4" width="32" height="32" rx="2"/></svg></span>
+      <span class="stitch-shape stitch-star stitch-sm" style="--stitch-fill:#e056fd; --stitch-stroke:#be2edd;"><svg viewBox="0 0 40 40" fill="var(--stitch-fill)" stroke="var(--stitch-stroke)" stroke-width="2" stroke-dasharray="4 3"><path d="M20 4l4.5 9.2 10 1.5-7.2 7 1.7 10L20 27.6l-9 4.1 1.7-10-7.2-7 10-1.5L20 4z"/></svg></span>
+      <span class="stitch-shape stitch-heart stitch-lg" style="--stitch-fill:#ff6b6b; --stitch-stroke:#ee5a5a;"><svg viewBox="0 0 40 36" fill="var(--stitch-fill)" stroke="var(--stitch-stroke)" stroke-width="2" stroke-dasharray="4 3"><path d="M20 32.5S4 22 4 13.2C4 8 7.6 4 12.2 4c3.2 0 5.8 2 7.8 5.2C21.8 6 24.6 4 27.8 4 32.4 4 36 8 36 13.2 36 22 20 32.5 20 32.5z"/></svg></span>
+      <span class="stitch-shape stitch-circle stitch-md" style="--stitch-fill:#00cec9; --stitch-stroke:#00b894;"><svg viewBox="0 0 40 40" fill="var(--stitch-fill)" stroke="var(--stitch-stroke)" stroke-width="2" stroke-dasharray="4 3"><circle cx="20" cy="20" r="16"/></svg></span>
+      <span class="stitch-shape stitch-triangle stitch-sm" style="--stitch-fill:#fd79a8; --stitch-stroke:#e84393;"><svg viewBox="0 0 40 36" fill="var(--stitch-fill)" stroke="var(--stitch-stroke)" stroke-width="2" stroke-dasharray="4 3"><polygon points="20,4 36,32 4,32"/></svg></span>
+      <span class="stitch-shape stitch-square stitch-lg" style="--stitch-fill:#fdcb6e; --stitch-stroke:#f39c12;"><svg viewBox="0 0 40 40" fill="var(--stitch-fill)" stroke="var(--stitch-stroke)" stroke-width="2" stroke-dasharray="4 3"><rect x="4" y="4" width="32" height="32" rx="2"/></svg></span>
+      <span class="stitch-shape stitch-star stitch-md" style="--stitch-fill:#6c5ce7; --stitch-stroke:#5b4bbe;"><svg viewBox="0 0 40 40" fill="var(--stitch-fill)" stroke="var(--stitch-stroke)" stroke-width="2" stroke-dasharray="4 3"><path d="M20 4l4.5 9.2 10 1.5-7.2 7 1.7 10L20 27.6l-9 4.1 1.7-10-7.2-7 10-1.5L20 4z"/></svg></span>
+      <span class="stitch-shape stitch-heart stitch-sm" style="--stitch-fill:#00b894; --stitch-stroke:#009975;"><svg viewBox="0 0 40 36" fill="var(--stitch-fill)" stroke="var(--stitch-stroke)" stroke-width="2" stroke-dasharray="4 3"><path d="M20 32.5S4 22 4 13.2C4 8 7.6 4 12.2 4c3.2 0 5.8 2 7.8 5.2C21.8 6 24.6 4 27.8 4 32.4 4 36 8 36 13.2 36 22 20 32.5 20 32.5z"/></svg></span>
+      <span class="stitch-shape stitch-circle stitch-sm" style="--stitch-fill:#fab1a0; --stitch-stroke:#e17055;"><svg viewBox="0 0 40 40" fill="var(--stitch-fill)" stroke="var(--stitch-stroke)" stroke-width="2" stroke-dasharray="4 3"><circle cx="20" cy="20" r="16"/></svg></span>
+      <span class="stitch-shape stitch-triangle stitch-md" style="--stitch-fill:#74b9ff; --stitch-stroke:#0984e3;"><svg viewBox="0 0 40 36" fill="var(--stitch-fill)" stroke="var(--stitch-stroke)" stroke-width="2" stroke-dasharray="4 3"><polygon points="20,4 36,32 4,32"/></svg></span>
+      <span class="stitch-shape stitch-square stitch-sm" style="--stitch-fill:#a29bfe; --stitch-stroke:#6c5ce7;"><svg viewBox="0 0 40 40" fill="var(--stitch-fill)" stroke="var(--stitch-stroke)" stroke-width="2" stroke-dasharray="4 3"><rect x="4" y="4" width="32" height="32" rx="2"/></svg></span>
+      <span class="stitch-shape stitch-star stitch-xl" style="--stitch-fill:#ff7675; --stitch-stroke:#d63031;"><svg viewBox="0 0 40 40" fill="var(--stitch-fill)" stroke="var(--stitch-stroke)" stroke-width="2" stroke-dasharray="4 3"><path d="M20 4l4.5 9.2 10 1.5-7.2 7 1.7 10L20 27.6l-9 4.1 1.7-10-7.2-7 10-1.5L20 4z"/></svg></span>
+      <span class="stitch-shape stitch-heart stitch-md" style="--stitch-fill:#ffeaa7; --stitch-stroke:#fdcb6e;"><svg viewBox="0 0 40 36" fill="var(--stitch-fill)" stroke="var(--stitch-stroke)" stroke-width="2" stroke-dasharray="4 3"><path d="M20 32.5S4 22 4 13.2C4 8 7.6 4 12.2 4c3.2 0 5.8 2 7.8 5.2C21.8 6 24.6 4 27.8 4 32.4 4 36 8 36 13.2 36 22 20 32.5 20 32.5z"/></svg></span>
     </div>
-    <div class="workshop-desk"></div>
     <div class="start-content">
-      <div class="paper-card paper-fold">
-        <h1 class="title">Make Your Own Fish!</h1>
-        <p class="title-sub">종이에 물고기를 그려 보내요</p>
-        <button type="button" class="btn-draw" id="btn-draw">DRAW</button>
-      </div>
+      <h1 class="start-title">나만의 물고기 그리기!</h1>
+      <p class="start-desc">이카와 세이료의 작품을 참고해서 그려 보세요.</p>
+      <button type="button" class="btn-draw" id="btn-draw">DRAW</button>
     </div>
   </section>
 
   <!-- 2. 그리기 화면 (종이 접기 공방) -->
   <section id="draw-screen" class="screen draw-workshop">
     <div class="workshop-desk draw-desk"></div>
-    <div class="draw-header paper-tape">
-      <button type="button" class="btn-back" id="btn-back" aria-label="뒤로">←</button>
-      <h2>물고기를 그려보세요</h2>
-    </div>
     <div class="draw-tools paper-tray">
-      <div class="pencils">
-        <button type="button" class="pencil active" data-color="#e74c3c" style="--pencil-color:#e74c3c" title="빨강"></button>
-        <button type="button" class="pencil" data-color="#e67e22" style="--pencil-color:#e67e22" title="주황"></button>
-        <button type="button" class="pencil" data-color="#f1c40f" style="--pencil-color:#f1c40f" title="노랑"></button>
-        <button type="button" class="pencil" data-color="#2ecc71" style="--pencil-color:#2ecc71" title="초록"></button>
-        <button type="button" class="pencil" data-color="#3498db" style="--pencil-color:#3498db" title="파랑"></button>
-        <button type="button" class="pencil" data-color="#2c3e50" style="--pencil-color:#2c3e50" title="남색"></button>
-        <button type="button" class="pencil" data-color="#9b59b6" style="--pencil-color:#9b59b6" title="보라"></button>
+      <div class="draw-tools-row draw-tools-row--colors">
+        <div class="pencils">
+          <button type="button" class="pencil active" data-color="#e74c3c" style="--pencil-color:#e74c3c" title="빨강"></button>
+          <button type="button" class="pencil" data-color="#e67e22" style="--pencil-color:#e67e22" title="주황"></button>
+          <button type="button" class="pencil" data-color="#f1c40f" style="--pencil-color:#f1c40f" title="노랑"></button>
+          <button type="button" class="pencil" data-color="#2ecc71" style="--pencil-color:#2ecc71" title="초록"></button>
+          <button type="button" class="pencil" data-color="#3498db" style="--pencil-color:#3498db" title="파랑"></button>
+          <button type="button" class="pencil" data-color="#2c3e50" style="--pencil-color:#2c3e50" title="남색"></button>
+          <button type="button" class="pencil" data-color="#9b59b6" style="--pencil-color:#9b59b6" title="보라"></button>
+        </div>
       </div>
-      <div class="pen-sizes" title="펜 굵기">
-        <button type="button" class="pen-size active" data-size="2" title="얇게">얇게</button>
-        <button type="button" class="pen-size" data-size="5" title="보통">보통</button>
-        <button type="button" class="pen-size" data-size="10" title="굵게">굵게</button>
+      <div class="draw-tools-row draw-tools-row--size-eraser">
+        <div class="pen-sizes" title="펜 굵기">
+          <button type="button" class="pen-size active" data-size="2" title="얇게">얇게</button>
+          <button type="button" class="pen-size" data-size="5" title="보통">보통</button>
+          <button type="button" class="pen-size" data-size="10" title="굵게">굵게</button>
+        </div>
+        <button type="button" class="eraser" id="btn-eraser" title="지우개">🧽</button>
       </div>
-      <button type="button" class="eraser" id="btn-eraser" title="지우개">🧽</button>
     </div>
     <div class="canvas-wrap paper-sheet">
-      <canvas id="draw-canvas" width="400" height="300"></canvas>
-      <div class="fish-guide-overlay" aria-hidden="true">
-        <svg viewBox="0 0 400 300" class="fish-guide-svg">
-          <ellipse cx="200" cy="150" rx="118" ry="40" fill="none" stroke="currentColor" stroke-width="2"/>
-          <path d="M318 150 L388 105 L388 195 Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
-          <circle cx="108" cy="150" r="10" fill="none" stroke="currentColor" stroke-width="2"/>
-        </svg>
+      <div class="draw-canvas-bg" aria-hidden="true">
+        <img src="b.png" alt="" />
       </div>
+      <canvas id="draw-canvas" width="400" height="300"></canvas>
     </div>
     <div class="draw-actions paper-tape">
       <button type="button" class="btn-secondary" id="btn-clear">지우기</button>
@@ -103,6 +115,7 @@
     </div>
   </section>
 
+  <button type="button" class="fullscreen-btn mode-toggle-btn" id="fullscreen-btn" title="전체 화면" aria-label="전체 화면">⛶</button>
   <button type="button" class="mode-toggle-btn" id="mode-toggle-btn" title="전시 / 그리기 모드 전환">◐</button>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>

@@ -18,6 +18,10 @@
   --tape: rgba(255, 255, 255, 0.75);
   --desk: #6b5344;
   --desk-light: #8b7355;
+  /* 이카와 세이료 시작 화면 (색종이 원색) */
+  --start-bg: #faf8f5;
+  --start-coral: #e74c3c;
+  --start-coral-hover: #c0392b;
 }
 
 * {
@@ -77,10 +81,10 @@ body.exhibit-mode .ocean-actions {
   bottom: 0.75rem;
   right: 0.75rem;
   z-index: 100;
-  width: 32px;
-  height: 32px;
+  width: 36px;
+  height: 36px;
   padding: 0;
-  font-size: 0.9rem;
+  font-size: 1rem;
   line-height: 1;
   color: var(--text);
   background: rgba(0, 0, 0, 0.35);
@@ -91,6 +95,14 @@ body.exhibit-mode .ocean-actions {
   transition: opacity 0.2s;
 }
 .mode-toggle-btn:hover {
+  opacity: 1;
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.fullscreen-btn {
+  right: 3.25rem;
+}
+.fullscreen-btn.is-fullscreen {
   opacity: 1;
   background: rgba(0, 0, 0, 0.5);
 }
@@ -232,9 +244,165 @@ body.exhibit-mode .ocean-actions {
   100% { transform: translateY(-120vh) scale(0.6); opacity: 0; }
 }
 
-/* ===== 시작 화면 (종이 접기 공방) ===== */
-.start-workshop .ocean-bg {
-  opacity: 0.35;
+/* ===== 시작 화면 (이카와 세이료 · 종이 공방) ===== */
+.start-ikawa {
+  background: var(--start-bg);
+}
+
+.start-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: var(--start-bg);
+}
+
+.start-paper-texture {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  opacity: 0.04;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  pointer-events: none;
+}
+
+/* 스티치 느낌 장식: 원형, 세모, 네모, 별, 하트 — 다양한 크기·색·여러 개 */
+.start-stitch-deco {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.stitch-shape {
+  position: absolute;
+  display: block;
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.1));
+}
+.stitch-shape svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  animation: stitch-float 4s ease-in-out infinite;
+}
+.start-stitch-deco .stitch-shape:nth-child(5n+1) svg { animation-delay: 0s;    animation-duration: 3.8s; }
+.start-stitch-deco .stitch-shape:nth-child(5n+2) svg { animation-delay: 0.4s;  animation-duration: 4.2s; }
+.start-stitch-deco .stitch-shape:nth-child(5n+3) svg { animation-delay: 0.8s;  animation-duration: 3.5s; }
+.start-stitch-deco .stitch-shape:nth-child(5n+4) svg { animation-delay: 1.2s;  animation-duration: 4.5s; }
+.start-stitch-deco .stitch-shape:nth-child(5n)   svg { animation-delay: 1.6s;  animation-duration: 4s; }
+
+@keyframes stitch-float {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(3px, -6px) scale(1.03); }
+}
+
+/* 크기: sm → xl */
+.stitch-sm { width: 40px; height: 40px; }
+.stitch-sm.stitch-triangle, .stitch-sm.stitch-heart { height: 36px; }
+.stitch-md { width: 56px; height: 56px; }
+.stitch-md.stitch-triangle, .stitch-md.stitch-heart { height: 50px; }
+.stitch-lg { width: 72px; height: 72px; }
+.stitch-lg.stitch-triangle, .stitch-lg.stitch-heart { height: 65px; }
+.stitch-xl { width: 92px; height: 92px; }
+.stitch-xl.stitch-triangle, .stitch-xl.stitch-heart { height: 83px; }
+
+/* 20개 도형 위치·회전 (화면 곳곳에 분산) */
+.start-stitch-deco .stitch-shape:nth-child(1)  { left: 5%;   top: 8%;   transform: rotate(-12deg); }
+.start-stitch-deco .stitch-shape:nth-child(2)  { right: 8%;  top: 12%;  transform: rotate(18deg); }
+.start-stitch-deco .stitch-shape:nth-child(3)  { left: 8%;   top: 35%;  transform: rotate(5deg); }
+.start-stitch-deco .stitch-shape:nth-child(4)  { right: 6%;  top: 28%;  transform: rotate(-20deg); }
+.start-stitch-deco .stitch-shape:nth-child(5)  { left: 50%;  top: 5%;   transform: translateX(-50%) rotate(-8deg); }
+.start-stitch-deco .stitch-shape:nth-child(6)  { left: 18%;  top: 18%;  transform: rotate(10deg); }
+.start-stitch-deco .stitch-shape:nth-child(7)  { right: 4%;  top: 42%;  transform: rotate(15deg); }
+.start-stitch-deco .stitch-shape:nth-child(8)  { left: 4%;   bottom: 32%; transform: rotate(-6deg); }
+.start-stitch-deco .stitch-shape:nth-child(9)  { right: 18%; top: 55%;  transform: rotate(-14deg); }
+.start-stitch-deco .stitch-shape:nth-child(10) { left: 42%;  top: 22%;  transform: rotate(8deg); }
+.start-stitch-deco .stitch-shape:nth-child(11) { right: 28%; top: 8%;   transform: rotate(-10deg); }
+.start-stitch-deco .stitch-shape:nth-child(12) { left: 22%;  bottom: 18%; transform: rotate(12deg); }
+.start-stitch-deco .stitch-shape:nth-child(13) { right: 12%; bottom: 28%; transform: rotate(-16deg); }
+.start-stitch-deco .stitch-shape:nth-child(14) { left: 55%;  bottom: 12%; transform: rotate(6deg); }
+.start-stitch-deco .stitch-shape:nth-child(15) { left: 12%;  top: 52%;  transform: rotate(-9deg); }
+.start-stitch-deco .stitch-shape:nth-child(16) { right: 22%; bottom: 8%;  transform: rotate(14deg); }
+.start-stitch-deco .stitch-shape:nth-child(17) { left: 35%;  top: 42%;  transform: rotate(-5deg); }
+.start-stitch-deco .stitch-shape:nth-child(18) { right: 35%; top: 35%;  transform: rotate(7deg); }
+.start-stitch-deco .stitch-shape:nth-child(19) { left: 6%;   bottom: 8%;  transform: rotate(-18deg); }
+.start-stitch-deco .stitch-shape:nth-child(20) { right: 8%;  bottom: 18%; transform: translateX(0) rotate(11deg); }
+
+.start-content {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  padding: 2rem 1.5rem;
+  max-width: 90vw;
+  margin: 0 auto;
+}
+
+@keyframes title-motion {
+  0%, 100% { transform: translateY(0) translateX(0); }
+  33% { transform: translateY(-6px) translateX(2px); }
+  66% { transform: translateY(2px) translateX(-3px); }
+}
+
+.start-title {
+  font-size: clamp(2.1rem, 6.5vw, 3.5rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.3;
+  margin-bottom: 1rem;
+  white-space: nowrap;
+  font-family: 'Segoe UI', 'Apple SD Gothic Neo', sans-serif;
+  background: linear-gradient(90deg,
+    #e74c3c 0%,
+    #e67e22 18%,
+    #f1c40f 35%,
+    #2ecc71 52%,
+    #3498db 68%,
+    #9b59b6 85%,
+    #e74c3c 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-stroke: 1px #5c4033;
+  paint-order: stroke fill;
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.12)) drop-shadow(0 0 0 1px rgba(92, 64, 51, 0.4));
+  animation: title-motion 2.5s ease-in-out infinite, title-gradient 8s linear infinite;
+}
+@keyframes title-gradient {
+  to { background-position: 200% center; }
+}
+
+.start-desc {
+  font-size: clamp(1.15rem, 2.8vw, 1.45rem);
+  line-height: 1.5;
+  white-space: nowrap;
+  color: #3d3629;
+  margin-bottom: 2.5rem;
+}
+
+#start-screen .btn-draw {
+  padding: 1.4rem 3.75rem;
+  font-size: 1.55rem;
+  letter-spacing: 0.12em;
+  color: #fff;
+  background: linear-gradient(180deg, var(--start-coral-hover) 0%, var(--start-coral) 100%);
+  border: none;
+  border-radius: 999px;
+  cursor: pointer;
+  box-shadow:
+    0 2px 0 rgba(0, 0, 0, 0.12),
+    0 6px 16px rgba(0, 0, 0, 0.15);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+#start-screen .btn-draw:hover {
+  background: linear-gradient(180deg, #c0392b 0%, #e74c3c 100%);
+  transform: scale(1.05);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+}
+
+#start-screen .btn-draw:active {
+  transform: scale(0.98);
 }
 
 .workshop-desk {
@@ -254,81 +422,9 @@ body.exhibit-mode .ocean-actions {
   background: linear-gradient(160deg, #9c8b72 0%, #7d6b5a 40%, #5a4a3d 100%);
 }
 
-.start-content {
-  position: relative;
-  z-index: 2;
-  text-align: center;
-  padding: 2rem;
-}
-
-.paper-card {
-  background: var(--paper);
-  color: #3d3629;
-  padding: 2.5rem 2.5rem 2.25rem;
-  max-width: 320px;
-  box-shadow:
-    2px 2px 0 var(--paper-shadow),
-    4px 4px 0 rgba(0, 0, 0, 0.08),
-    8px 8px 24px rgba(0, 0, 0, 0.2);
-  position: relative;
-}
-
-.paper-fold::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 0;
-  height: 0;
-  border-style: solid;
-  border-width: 0 32px 32px 0;
-  border-color: transparent var(--paper-dark) transparent transparent;
-  box-shadow: 2px -2px 4px rgba(0, 0, 0, 0.06);
-}
-
-.title {
-  font-size: clamp(1.6rem, 4.5vw, 2.4rem);
-  font-weight: 600;
-  letter-spacing: 0.02em;
-  margin-bottom: 0.4rem;
-  color: #2c261e;
-}
-
-.title-sub {
-  font-size: 0.9rem;
-  color: #6b5d4d;
-  margin-bottom: 2rem;
-  font-weight: 400;
-}
-
-.btn-draw {
-  padding: 0.9rem 2.2rem;
-  font-size: 1.1rem;
-  letter-spacing: 0.12em;
-  color: #fff;
-  background: linear-gradient(180deg, var(--kraft-light) 0%, var(--kraft) 100%);
-  border: none;
-  border-bottom: 3px solid rgba(0, 0, 0, 0.15);
-  border-radius: 6px;
-  cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-}
-
-.btn-draw:hover {
-  background: linear-gradient(180deg, #ddc08e 0%, var(--kraft) 100%);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
-}
-
-.btn-draw:active {
-  transform: translateY(1px);
-  border-bottom-width: 1px;
-}
-
-/* ===== 그리기 화면 (종이 접기 공방) ===== */
+/* ===== 그리기 화면 (시작화면과 같은 색감) ===== */
 .draw-workshop {
-  background: linear-gradient(180deg, #7d6b5a 0%, var(--desk) 50%, #4a3c32 100%);
+  background: var(--start-bg);
 }
 
 .draw-workshop .ocean-bg {
@@ -336,8 +432,7 @@ body.exhibit-mode .ocean-actions {
 }
 
 .draw-desk {
-  opacity: 1;
-  background: linear-gradient(180deg, #8b7355 0%, #6b5344 40%, #4a3c32 100%);
+  opacity: 0;
   pointer-events: none;
 }
 
@@ -347,10 +442,18 @@ body.exhibit-mode .ocean-actions {
 }
 
 .paper-tape {
-  background: var(--tape);
+  background: rgba(255, 255, 255, 0.85);
   color: #2c261e;
   border-radius: 4px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.draw-workshop .draw-header {
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  border: 1px solid rgba(0, 0, 0, 0.06);
 }
 
 .draw-header {
@@ -366,15 +469,27 @@ body.exhibit-mode .ocean-actions {
 }
 
 .draw-header h2 {
-  font-size: 1rem;
+  font-size: 1.25rem;
   font-weight: 600;
   color: #3d3629;
 }
 
+.draw-workshop .btn-back {
+  color: #3d3629;
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+}
+
+.draw-workshop .btn-back:hover {
+  background: #fff;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
 .btn-back {
-  width: 40px;
-  height: 40px;
-  font-size: 1.4rem;
+  width: 46px;
+  height: 46px;
+  font-size: 1.6rem;
   color: #5a4a3a;
   background: var(--paper);
   border: 1px solid var(--paper-shadow);
@@ -393,19 +508,42 @@ body.exhibit-mode .ocean-actions {
   position: relative;
   z-index: 10;
   display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.75rem;
+  padding: 1rem 1.25rem;
+  margin-bottom: 0.5rem;
+}
+
+.draw-tools-row {
+  display: flex;
   align-items: center;
   justify-content: center;
   gap: 1rem;
-  flex-wrap: wrap;
-  padding: 1rem;
-  margin-bottom: 0.5rem;
+}
+.draw-tools-row--colors {
+  width: 100%;
+  min-width: 0;
+}
+.draw-tools-row--size-eraser {
+  flex-shrink: 0;
+}
+
+.draw-workshop .paper-tray {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+  max-width: 600px;
+  margin: 0 auto;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(0, 0, 0, 0.08);
 }
 
 .paper-tray {
   background: var(--paper);
   border-radius: 12px;
   padding: 1rem 1.25rem;
-  max-width: 520px;
+  max-width: 600px;
   margin: 0 auto;
   box-shadow:
     0 2px 0 var(--paper-shadow),
@@ -415,16 +553,20 @@ body.exhibit-mode .ocean-actions {
 
 .pencils {
   display: flex;
-  gap: 6px;
-  padding: 6px 10px;
+  flex-wrap: nowrap;
+  gap: 8px;
+  padding: 8px 12px;
   background: rgba(0, 0, 0, 0.06);
   border-radius: 999px;
   border: 1px solid rgba(0, 0, 0, 0.08);
+  width: 100%;
+  justify-content: center;
+  min-width: 0;
 }
 
 .pencil {
-  width: 30px;
-  height: 30px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   border: 2px solid transparent;
   background: var(--pencil-color);
@@ -452,8 +594,8 @@ body.exhibit-mode .ocean-actions {
 }
 
 .pen-size {
-  padding: 5px 10px;
-  font-size: 0.8rem;
+  padding: 6px 14px;
+  font-size: 0.95rem;
   color: #3d3629;
   background: transparent;
   border: 2px solid transparent;
@@ -473,9 +615,9 @@ body.exhibit-mode .ocean-actions {
 }
 
 .eraser {
-  width: 40px;
-  height: 40px;
-  font-size: 1.3rem;
+  width: 48px;
+  height: 48px;
+  font-size: 1.5rem;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -498,6 +640,32 @@ body.exhibit-mode .ocean-actions {
   z-index: 5;
   padding: 1rem;
   margin: 0 auto;
+}
+
+.draw-canvas-bg {
+  position: absolute;
+  top: 1.25rem;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 400px;
+  height: 300px;
+  max-width: calc(100% - 2rem);
+  z-index: 0;
+  border-radius: 2px;
+  overflow: hidden;
+  pointer-events: none;
+}
+.draw-canvas-bg img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.draw-workshop .paper-sheet {
+  background: rgba(255, 255, 255, 0.98);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(0, 0, 0, 0.08);
 }
 
 .paper-sheet {
@@ -527,37 +695,16 @@ body.exhibit-mode .ocean-actions {
 }
 
 #draw-canvas {
+  position: relative;
+  z-index: 1;
   display: block;
   max-width: 100%;
   height: auto;
-  background: #fffef9;
+  background: transparent;
   border-radius: 2px;
   box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.06);
   cursor: crosshair;
   touch-action: none;
-}
-
-.draw-workshop .fish-guide-svg {
-  color: rgba(60, 54, 41, 0.18);
-}
-
-.fish-guide-overlay {
-  position: absolute;
-  top: 1.25rem;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 400px;
-  height: 300px;
-  max-width: calc(100% - 2rem);
-  pointer-events: none;
-  border-radius: 16px;
-  overflow: hidden;
-}
-
-.fish-guide-svg {
-  width: 100%;
-  height: 100%;
-  color: rgba(0, 0, 0, 0.28);
 }
 
 .draw-actions {
@@ -575,41 +722,48 @@ body.exhibit-mode .ocean-actions {
   padding: 1rem 1.25rem;
 }
 
-.draw-workshop .btn-secondary {
-  padding: 0.65rem 1.25rem;
-  font-size: 0.95rem;
-  color: #3d3629;
-  background: var(--paper);
-  border: 1px solid var(--paper-shadow);
+.draw-workshop .draw-actions.paper-tape {
+  background: rgba(255, 255, 255, 0.9);
   border-radius: 8px;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.draw-workshop .btn-secondary {
+  padding: 0.8rem 1.5rem;
+  font-size: 1.1rem;
+  color: #3d3629;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
 }
 
 .draw-workshop .btn-secondary:hover {
-  background: var(--paper-dark);
+  background: rgba(255, 255, 255, 1);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
 .draw-workshop .btn-primary {
-  padding: 0.65rem 1.75rem;
-  font-size: 0.95rem;
+  padding: 0.8rem 2rem;
+  font-size: 1.1rem;
   letter-spacing: 0.08em;
   color: #fff;
-  background: linear-gradient(180deg, var(--kraft-light) 0%, var(--kraft) 100%);
+  background: linear-gradient(180deg, var(--start-coral-hover) 0%, var(--start-coral) 100%);
   border: none;
-  border-bottom: 3px solid rgba(0, 0, 0, 0.15);
   border-radius: 8px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.1), 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .draw-workshop .btn-primary:hover {
-  background: linear-gradient(180deg, #ddc08e 0%, var(--kraft) 100%);
+  background: linear-gradient(180deg, #c0392b 0%, #e74c3c 100%);
   transform: translateY(-1px);
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
 }
 
 .btn-secondary {
-  padding: 0.75rem 1.5rem;
-  font-size: 1rem;
+  padding: 0.85rem 1.75rem;
+  font-size: 1.1rem;
   color: var(--text);
   background: rgba(255, 255, 255, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.25);
@@ -623,8 +777,8 @@ body.exhibit-mode .ocean-actions {
 }
 
 .btn-primary {
-  padding: 0.75rem 2rem;
-  font-size: 1rem;
+  padding: 0.85rem 2.25rem;
+  font-size: 1.1rem;
   letter-spacing: 0.1em;
   color: var(--ocean-deep);
   background: var(--accent);
@@ -671,8 +825,8 @@ body.exhibit-mode .ocean-actions {
 }
 
 .btn-draw.again {
-  padding: 0.75rem 1.5rem;
-  font-size: 1rem;
+  padding: 0.85rem 1.75rem;
+  font-size: 1.1rem;
 }
 
 /* ===== 반응형 ===== */
@@ -682,8 +836,8 @@ body.exhibit-mode .ocean-actions {
   }
 
   .pencil {
-    width: 28px;
-    height: 28px;
+    width: 32px;
+    height: 32px;
   }
 
   #draw-canvas {

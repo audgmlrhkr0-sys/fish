@@ -115,8 +115,7 @@ function endDraw(e) {
 }
 
 function clearCanvas() {
-  ctx.fillStyle = '#ffffff';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
 }
 
 function initCanvas() {
@@ -559,8 +558,54 @@ function setExhibitMode(on) {
   }
 }
 
+// ========== 풀스크린 ==========
+function isFullscreen() {
+  return !!(document.fullscreenElement || document.webkitFullscreenElement);
+}
+function enterFullscreen() {
+  var el = document.documentElement;
+  if (el.requestFullscreen) return el.requestFullscreen();
+  if (el.webkitRequestFullscreen) return el.webkitRequestFullscreen();
+  return Promise.reject(new Error('Fullscreen not supported'));
+}
+function exitFullscreen() {
+  if (document.exitFullscreen) return document.exitFullscreen();
+  if (document.webkitExitFullscreen) return document.webkitExitFullscreen();
+  return Promise.resolve();
+}
+function toggleFullscreen() {
+  var btn = document.getElementById('fullscreen-btn');
+  if (isFullscreen()) {
+    exitFullscreen().then(function () { updateFullscreenButton(false); }).catch(function () {});
+  } else {
+    enterFullscreen().then(function () { updateFullscreenButton(true); }).catch(function () {
+      if (btn) btn.title = '전체 화면을 지원하지 않는 브라우저입니다';
+    });
+  }
+}
+function updateFullscreenButton(full) {
+  var btn = document.getElementById('fullscreen-btn');
+  if (!btn) return;
+  if (full) {
+    btn.classList.add('is-fullscreen');
+    btn.textContent = '\u29E6';
+    btn.title = '전체 화면 나가기';
+  } else {
+    btn.classList.remove('is-fullscreen');
+    btn.textContent = '\u26F6';
+    btn.title = '전체 화면';
+  }
+}
+
 // ========== 버튼 연결 (DOM 준비 후 실행) ==========
 function initApp() {
+  var fullscreenBtn = document.getElementById('fullscreen-btn');
+  if (fullscreenBtn) {
+    fullscreenBtn.addEventListener('click', toggleFullscreen);
+  }
+  document.addEventListener('fullscreenchange', function () { updateFullscreenButton(!!document.fullscreenElement); });
+  document.addEventListener('webkitfullscreenchange', function () { updateFullscreenButton(!!document.webkitFullscreenElement); });
+
   var modeToggle = document.getElementById('mode-toggle-btn');
   if (modeToggle) {
     modeToggle.textContent = exhibitModeOn ? '✎' : '◐';
