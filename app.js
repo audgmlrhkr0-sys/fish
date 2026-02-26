@@ -64,7 +64,7 @@ var isDrawing = false;
 var lastX = 0;
 var lastY = 0;
 var currentLineWidth = 5;
-var eraserSize = 24;
+var currentEraserSize = 16;
 
 function getCanvasPoint(e) {
   const rect = canvas.getBoundingClientRect();
@@ -85,7 +85,17 @@ function startDraw(e) {
   lastX = x;
   lastY = y;
   if (isEraser) {
-    ctx.clearRect(x - eraserSize / 2, y - eraserSize / 2, eraserSize, eraserSize);
+    const eraseWidth = currentEraserSize || 16;
+    ctx.save();
+    ctx.globalCompositeOperation = 'destination-out';
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.lineWidth = eraseWidth;
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+    ctx.lineTo(x + 0.1, y + 0.1);
+    ctx.stroke();
+    ctx.restore();
   }
 }
 
@@ -93,11 +103,22 @@ function draw(e) {
   e.preventDefault();
   if (!isDrawing) return;
   const { x, y } = getCanvasPoint(e);
-  ctx.lineCap = 'round';
-  ctx.lineJoin = 'round';
   if (isEraser) {
-    ctx.clearRect(x - eraserSize / 2, y - eraserSize / 2, eraserSize, eraserSize);
+    const eraseWidth = currentEraserSize || 16;
+    ctx.save();
+    ctx.globalCompositeOperation = 'destination-out';
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.lineWidth = eraseWidth;
+    ctx.beginPath();
+    ctx.moveTo(lastX, lastY);
+    ctx.lineTo(x, y);
+    ctx.stroke();
+    ctx.restore();
   } else {
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
     ctx.strokeStyle = currentColor;
     ctx.lineWidth = currentLineWidth;
     ctx.beginPath();
@@ -131,27 +152,33 @@ canvas.addEventListener('touchstart', startDraw, { passive: false });
 canvas.addEventListener('touchmove', draw, { passive: false });
 canvas.addEventListener('touchend', endDraw, { passive: false });
 
-// 연필/지우개
+// 연필 색 선택
 document.querySelectorAll('.pencil').forEach(function (btn) {
   btn.addEventListener('click', function () {
     isEraser = false;
     document.querySelectorAll('.pencil').forEach(function (b) { b.classList.remove('active'); });
-    document.getElementById('btn-eraser').classList.remove('active');
     btn.classList.add('active');
     currentColor = btn.dataset.color;
   });
 });
 
-document.getElementById('btn-eraser').addEventListener('click', function () {
-  isEraser = true;
-  document.querySelectorAll('.pencil').forEach(function (b) { b.classList.remove('active'); });
-  document.querySelectorAll('.pen-size').forEach(function (b) { b.classList.remove('active'); });
-  document.getElementById('btn-eraser').classList.add('active');
-});
-
+// 연필 굵기: 누르면 연필 모드 + 해당 굵기, 지우개 굵기 선택 해제
 document.querySelectorAll('.pen-size').forEach(function (btn) {
   btn.addEventListener('click', function () {
+    isEraser = false;
     currentLineWidth = parseInt(btn.dataset.size, 10) || 5;
+    document.querySelectorAll('.pen-size').forEach(function (b) { b.classList.remove('active'); });
+    document.querySelectorAll('.eraser-size').forEach(function (b) { b.classList.remove('active'); });
+    btn.classList.add('active');
+  });
+});
+
+// 지우개 굵기: 누르면 지우개 모드 + 해당 굵기, 연필 굵기 선택 해제
+document.querySelectorAll('.eraser-size').forEach(function (btn) {
+  btn.addEventListener('click', function () {
+    isEraser = true;
+    currentEraserSize = parseInt(btn.dataset.size, 10) || 16;
+    document.querySelectorAll('.eraser-size').forEach(function (b) { b.classList.remove('active'); });
     document.querySelectorAll('.pen-size').forEach(function (b) { b.classList.remove('active'); });
     btn.classList.add('active');
   });
@@ -490,6 +517,35 @@ function stopExhibitPolling() {
   }
 }
 
+// 전시 모드 보호화면 방지: 5분마다 가짜 입력 이벤트 (티 나지 않음)
+var keepAwakeTimer = null;
+var KEEP_AWAKE_MINUTES = 5;
+
+function dispatchKeepAwake() {
+  try {
+    var ev = new MouseEvent('mousemove', {
+      bubbles: false,
+      cancelable: false,
+      view: window,
+      clientX: 0,
+      clientY: 0
+    });
+    document.body.dispatchEvent(ev);
+  } catch (e) {}
+}
+
+function startKeepAwake() {
+  if (keepAwakeTimer) return;
+  keepAwakeTimer = setInterval(dispatchKeepAwake, KEEP_AWAKE_MINUTES * 60 * 1000);
+}
+
+function stopKeepAwake() {
+  if (keepAwakeTimer) {
+    clearInterval(keepAwakeTimer);
+    keepAwakeTimer = null;
+  }
+}
+
 function loadLocalFish() {
   var list = [];
   try {
@@ -512,6 +568,7 @@ function enterOceanScreen() {
       loadAllFish();
       subscribeNewFish();
       startExhibitPolling();
+      startKeepAwake();
     } else {
       loadLocalFish();
       loadAllFish();
@@ -542,10 +599,13 @@ function refreshExhibitFish() {
 
 function setExhibitMode(on) {
   exhibitModeOn = on;
-  if (on) try { sessionStorage.setItem('exhibitMode', '1'); } catch (e) {}
-  else {
+  if (on) {
+    try { sessionStorage.setItem('exhibitMode', '1'); } catch (e) {}
+    startKeepAwake();
+  } else {
     try { sessionStorage.removeItem('exhibitMode'); } catch (e) {}
     stopExhibitPolling();
+    stopKeepAwake();
   }
   var btn = document.getElementById('mode-toggle-btn');
   if (btn) btn.textContent = on ? '✎' : '◐';

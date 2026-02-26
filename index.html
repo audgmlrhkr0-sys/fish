@@ -40,12 +40,12 @@
     </div>
   </section>
 
-  <!-- 2. 그리기 화면 (종이 접기 공방) -->
+  <!-- 2. 그리기 화면: 왼쪽 팔레트 | 중앙 캔버스 | 오른쪽 도구+생성 -->
   <section id="draw-screen" class="screen draw-workshop">
     <div class="workshop-desk draw-desk"></div>
-    <div class="draw-tools paper-tray">
-      <div class="draw-tools-row draw-tools-row--colors">
-        <div class="pencils">
+    <div class="draw-layout">
+      <div class="draw-palette">
+        <div class="pencils pencils--grid">
           <button type="button" class="pencil active" data-color="#e74c3c" style="--pencil-color:#e74c3c" title="빨강"></button>
           <button type="button" class="pencil" data-color="#e67e22" style="--pencil-color:#e67e22" title="주황"></button>
           <button type="button" class="pencil" data-color="#f1c40f" style="--pencil-color:#f1c40f" title="노랑"></button>
@@ -53,26 +53,47 @@
           <button type="button" class="pencil" data-color="#3498db" style="--pencil-color:#3498db" title="파랑"></button>
           <button type="button" class="pencil" data-color="#2c3e50" style="--pencil-color:#2c3e50" title="남색"></button>
           <button type="button" class="pencil" data-color="#9b59b6" style="--pencil-color:#9b59b6" title="보라"></button>
+          <button type="button" class="pencil" data-color="#e91e63" style="--pencil-color:#e91e63" title="분홍"></button>
+          <button type="button" class="pencil" data-color="#00b894" style="--pencil-color:#00b894" title="민트"></button>
+          <button type="button" class="pencil" data-color="#00cec9" style="--pencil-color:#00cec9" title="청록"></button>
+          <button type="button" class="pencil" data-color="#fd79a8" style="--pencil-color:#fd79a8" title="연분홍"></button>
+          <button type="button" class="pencil" data-color="#795548" style="--pencil-color:#795548" title="갈색"></button>
+          <button type="button" class="pencil" data-color="#000000" style="--pencil-color:#000000" title="검정"></button>
+          <button type="button" class="pencil" data-color="#ffffff" style="--pencil-color:#ffffff" title="흰색"></button>
         </div>
       </div>
-      <div class="draw-tools-row draw-tools-row--size-eraser">
-        <div class="pen-sizes" title="펜 굵기">
-          <button type="button" class="pen-size active" data-size="2" title="얇게">얇게</button>
-          <button type="button" class="pen-size" data-size="5" title="보통">보통</button>
-          <button type="button" class="pen-size" data-size="10" title="굵게">굵게</button>
+      <div class="draw-canvas-block">
+        <div class="draw-canvas-area">
+          <div class="canvas-wrap paper-sheet">
+            <div class="draw-canvas-bg" aria-hidden="true">
+              <img src="b.png" alt="" />
+            </div>
+            <canvas id="draw-canvas" width="560" height="420"></canvas>
+          </div>
         </div>
-        <button type="button" class="eraser" id="btn-eraser" title="지우개">🧽</button>
+        <div class="draw-actions draw-canvas-actions">
+          <button type="button" class="btn-primary btn-create-fish" id="btn-create-fish">생성하기</button>
+        </div>
       </div>
-    </div>
-    <div class="canvas-wrap paper-sheet">
-      <div class="draw-canvas-bg" aria-hidden="true">
-        <img src="b.png" alt="" />
+      <div class="draw-side-tools">
+        <div class="size-group">
+          <span class="size-label">연필</span>
+          <div class="pen-sizes" title="펜 굵기">
+            <button type="button" class="pen-size active" data-size="2" title="얇게">얇게</button>
+            <button type="button" class="pen-size" data-size="5" title="보통">보통</button>
+            <button type="button" class="pen-size" data-size="10" title="굵게">굵게</button>
+          </div>
+        </div>
+        <div class="size-group">
+          <span class="size-label">지우개</span>
+          <div class="eraser-sizes" title="지우개 굵기">
+            <button type="button" class="eraser-size" data-size="8" title="얇게">얇게</button>
+            <button type="button" class="eraser-size" data-size="16" title="보통">보통</button>
+            <button type="button" class="eraser-size" data-size="28" title="굵게">굵게</button>
+          </div>
+        </div>
+        <button type="button" class="btn-clear-inline btn-clear-full" id="btn-clear" title="전체 삭제">전체 삭제</button>
       </div>
-      <canvas id="draw-canvas" width="400" height="300"></canvas>
-    </div>
-    <div class="draw-actions paper-tape">
-      <button type="button" class="btn-secondary" id="btn-clear">지우기</button>
-      <button type="button" class="btn-primary" id="btn-create-fish">CREATE FISH</button>
     </div>
   </section>
 
@@ -84,21 +105,27 @@
       <div class="wave wave3"></div>
       <div class="parallax-layer layer-far"></div>
       <div class="parallax-layer layer-mid"></div>
-      <!-- 바다 속 장식: 돌, 불가사리, 미역, 공기 방울 -->
+      <!-- 바다 속 장식: 이미지 바위(맨 뒤) → 불가사리, 미역, 산호, 말미잘, 공기 방울 -->
       <div class="ocean-deco" aria-hidden="true">
-        <div class="rock rock-1"></div>
-        <div class="rock rock-2"></div>
-        <div class="rock rock-3"></div>
-        <div class="rock rock-4"></div>
-        <div class="rock rock-5"></div>
-        <div class="starfish starfish-1"></div>
-        <div class="starfish starfish-2"></div>
-        <div class="starfish starfish-3"></div>
-        <div class="seaweed seaweed-1"></div>
-        <div class="seaweed seaweed-2"></div>
-        <div class="seaweed seaweed-3"></div>
-        <div class="seaweed seaweed-4"></div>
-        <div class="seaweed seaweed-5"></div>
+        <div class="rock-img rock-img-1" style="background-image: url(s.png);"></div>
+        <div class="rock-img rock-img-2" style="background-image: url(ss.png);"></div>
+        <div class="rock-img rock-img-3" style="background-image: url(sss.png);"></div>
+        <div class="rock-img rock-img-4" style="background-image: url(ssss.png);"></div>
+        <div class="rock-img rock-img-5" style="background-image: url(s.png);"></div>
+        <div class="rock-img rock-img-6" style="background-image: url(ss.png);"></div>
+        <div class="coral-img coral-img-1" style="background-image: url(t.png);"></div>
+        <div class="coral-img coral-img-2" style="background-image: url(tt.png);"></div>
+        <div class="starfish-img starfish-img-1" style="background-image: url(k.png);"></div>
+        <div class="starfish-img starfish-img-2" style="background-image: url(kk.png);"></div>
+        <div class="starfish-img starfish-img-3" style="background-image: url(kkk.png);"></div>
+        <div class="anemone-img anemone-img-1" style="background-image: url(m.png);"></div>
+        <div class="anemone-img anemone-img-2" style="background-image: url(mm.png);"></div>
+        <div class="seaweed seaweed-1 seaweed-img1"></div>
+        <div class="seaweed seaweed-2 seaweed-img1"></div>
+        <div class="seaweed seaweed-3 seaweed-img2"></div>
+        <div class="seaweed seaweed-4 seaweed-img2"></div>
+        <div class="seaweed seaweed-5 seaweed-img3"></div>
+        <div class="seaweed seaweed-6 seaweed-img3"></div>
         <div class="bubble bubble-1"></div>
         <div class="bubble bubble-2"></div>
         <div class="bubble bubble-3"></div>

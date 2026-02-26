@@ -1,9 +1,12 @@
 /* ===== 기본 & 변수 ===== */
 :root {
-  --ocean-deep: #0a1628;
-  --ocean-mid: #0d2137;
-  --ocean-light: #1a3a52;
-  --ocean-surface: #2a5a7a;
+  --ocean-deep: #061018;
+  --ocean-deep-mid: #0a1628;
+  --ocean-mid: #0e2238;
+  --ocean-mid-light: #153350;
+  --ocean-light: #1c4568;
+  --ocean-surface: #25607d;
+  --ocean-surface-bright: #2d7a94;
   --foam: rgba(255, 255, 255, 0.08);
   --accent: #4ecdc4;
   --accent-hover: #45b7aa;
@@ -76,6 +79,43 @@ body.exhibit-mode .ocean-actions {
   display: none !important;
 }
 
+/* 전시 모드: 바다에 햇빛이 들어오는 효과 */
+body.exhibit-mode .ocean-scene::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  top: -20%;
+  left: 10%;
+  right: 10%;
+  height: 120%;
+  background:
+    radial-gradient(ellipse 70% 80% at 50% 0%,
+      rgba(255, 255, 255, 0.18) 0%,
+      rgba(255, 248, 220, 0.1) 25%,
+      rgba(200, 230, 255, 0.04) 50%,
+      transparent 70%);
+  pointer-events: none;
+  z-index: 2;
+  animation: sunlight-sway 8s ease-in-out infinite;
+}
+body.exhibit-mode .ocean-scene::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 50%;
+  background: linear-gradient(180deg,
+    rgba(255, 255, 255, 0.08) 0%,
+    transparent 100%);
+  pointer-events: none;
+  z-index: 2;
+}
+@keyframes sunlight-sway {
+  0%, 100% { opacity: 1; transform: translateX(0); }
+  50% { opacity: 0.85; transform: translateX(2%); }
+}
+
 .mode-toggle-btn {
   position: fixed;
   bottom: 0.75rem;
@@ -112,9 +152,12 @@ body.exhibit-mode .ocean-actions {
   position: absolute;
   inset: 0;
   background: linear-gradient(180deg,
-    var(--ocean-surface) 0%,
-    var(--ocean-light) 25%,
-    var(--ocean-mid) 50%,
+    var(--ocean-surface-bright) 0%,
+    var(--ocean-surface) 8%,
+    var(--ocean-light) 22%,
+    var(--ocean-mid-light) 38%,
+    var(--ocean-mid) 55%,
+    var(--ocean-deep-mid) 75%,
     var(--ocean-deep) 100%);
   overflow: hidden;
 }
@@ -123,15 +166,18 @@ body.exhibit-mode .ocean-actions {
   position: absolute;
   left: -10%;
   right: -10%;
-  height: 120px;
-  background: var(--foam);
+  height: 140px;
+  background: radial-gradient(ellipse 100% 100% at 50% 100%,
+    rgba(255,255,255,0.12) 0%,
+    rgba(255,255,255,0.06) 35%,
+    transparent 70%);
   border-radius: 50%;
   animation: wave 8s ease-in-out infinite;
 }
 
-.wave1 { bottom: 15%; opacity: 0.6; animation-delay: 0s; }
-.wave2 { bottom: 10%; opacity: 0.4; animation-delay: -2s; animation-duration: 10s; }
-.wave3 { bottom: 5%;  opacity: 0.3; animation-delay: -4s; animation-duration: 12s; }
+.wave1 { bottom: 18%; opacity: 0.7; animation-delay: 0s; }
+.wave2 { bottom: 10%; opacity: 0.5; animation-delay: -2s; animation-duration: 10s; }
+.wave3 { bottom: 2%;  opacity: 0.35; animation-delay: -4s; animation-duration: 12s; }
 
 @keyframes wave {
   0%, 100% { transform: translateX(0) scaleY(1); }
@@ -148,12 +194,12 @@ body.exhibit-mode .ocean-actions {
 }
 
 .layer-far {
-  background-image: radial-gradient(ellipse at 50% 80%, var(--ocean-light) 0%, transparent 60%);
+  background-image: radial-gradient(ellipse 120% 80% at 50% 85%, var(--ocean-mid-light) 0%, transparent 55%);
   animation: parallax-slow 20s ease-in-out infinite;
 }
 
 .layer-mid {
-  background-image: radial-gradient(ellipse at 30% 70%, var(--ocean-surface) 0%, transparent 50%);
+  background-image: radial-gradient(ellipse 100% 60% at 35% 75%, var(--ocean-surface) 0%, transparent 45%);
   animation: parallax-slow 15s ease-in-out infinite reverse;
 }
 
@@ -162,7 +208,7 @@ body.exhibit-mode .ocean-actions {
   50% { transform: translate(2%, 1%); }
 }
 
-/* ===== 바다 속 장식 (돌, 불가사리, 미역, 공기 방울) ===== */
+/* ===== 바다 속 장식 (이미지 바위 → 불가사리, 미역, 공기 방울) ===== */
 .ocean-deco {
   position: absolute;
   inset: 0;
@@ -171,53 +217,115 @@ body.exhibit-mode .ocean-actions {
   overflow: hidden;
 }
 
-/* 돌 */
-.rock {
+/* 이미지 바위 (s, ss, sss, ssss) — 제일 뒤, 투명 배경 유지 */
+.rock-img {
   position: absolute;
   bottom: 0;
-  background: linear-gradient(145deg, #2a3a45 0%, #1a252e 50%, #0f1619 100%);
-  border-radius: 45% 55% 50% 50% / 40% 50% 60% 50%;
-  box-shadow: inset -2px -2px 4px rgba(0,0,0,0.3);
+  left: 0;
+  background-color: transparent;
+  background-repeat: no-repeat;
+  background-position: bottom center;
+  background-size: contain;
+  z-index: 0;
+  /* PNG에 흰 배경이 남아 있으면 흰색을 숨김 (흰색만 배경과 블렌드) */
+  mix-blend-mode: darken;
 }
-.rock-1 { left: 5%; bottom: 2%; width: 50px; height: 28px; }
-.rock-2 { left: 18%; bottom: 0; width: 70px; height: 35px; border-radius: 50% 45% 55% 50%; }
-.rock-3 { left: 42%; bottom: 1%; width: 45px; height: 25px; }
-.rock-4 { right: 22%; bottom: 0; width: 65px; height: 32px; border-radius: 55% 50% 45% 50%; }
-.rock-5 { right: 6%; bottom: 3%; width: 55px; height: 30px; }
+.rock-img-1 { left: 0%; bottom: 0%; width: 380px; height: 220px; }
+.rock-img-2 { left: 14%; bottom: 0%; width: 380px; height: 220px; }
+.rock-img-3 { left: 32%; bottom: 0%; width: 280px; height: 165px; }
+.rock-img-4 { left: 48%; bottom: 0%; width: 300px; height: 175px; }
+.rock-img-5 { left: 66%; bottom: 0%; width: 290px; height: 170px; }
+.rock-img-6 { right: 0%; bottom: 0%; width: 368px; height: 215px; }
 
-/* 불가사리 */
-.starfish {
+/* 산호 (t.png, tt.png — 양쪽 끝에 배치) */
+.coral-img {
   position: absolute;
   bottom: 0;
-  width: 28px;
-  height: 28px;
-  background: radial-gradient(circle at 30% 30%, #e8a87c, #c38d6a 40%, #a66b4a);
-  clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
-  opacity: 0.9;
+  background-repeat: no-repeat;
+  background-position: bottom center;
+  background-size: contain;
+  z-index: 1;
+  opacity: 0.92;
 }
-.starfish-1 { left: 12%; bottom: 4%; transform: scale(0.9) rotate(-15deg); }
-.starfish-2 { left: 35%; bottom: 3%; transform: scale(1.1) rotate(8deg); }
-.starfish-3 { right: 15%; bottom: 5%; transform: scale(0.85) rotate(20deg); }
+.coral-img-1 { left: 0%; bottom: 0%; width: 90px; height: 85px; }
+.coral-img-2 { right: 0%; bottom: 0%; width: 88px; height: 82px; }
 
-/* 미역 (해초) */
+/* 레이어 순서: 바위(0) < 산호·불가사리(1) < 말미잘(2) < 미역·공기방울(3) */
+.ocean-deco .coral-img,
+.ocean-deco .starfish-img {
+  z-index: 1;
+}
+.ocean-deco .anemone-img {
+  z-index: 2;
+}
+.ocean-deco .seaweed,
+.ocean-deco .bubble {
+  z-index: 3;
+}
+
+/* 불가사리 (k.png, kk.png, kkk.png — 바위 위에, 크기 다르게) */
+.starfish-img {
+  position: absolute;
+  bottom: 0;
+  background-repeat: no-repeat;
+  background-position: bottom center;
+  background-size: contain;
+  z-index: 1;
+  opacity: 0.95;
+  animation: starfish-drift 7s ease-in-out infinite;
+}
+.starfish-img-1 { left: 28%; bottom: 4%; width: 52px; height: 52px; --starfish-rot: -12deg; }
+.starfish-img-2 { left: 58%; bottom: 5%; width: 72px; height: 72px; --starfish-rot: 8deg; }
+.starfish-img-3 { right: 30%; bottom: 4%; width: 42px; height: 42px; --starfish-rot: -20deg; }
+
+/* 말미잘 (m.png, mm.png — 바위 앞·미역 뒤, 숨쉬는 모션) */
+.anemone-img {
+  position: absolute;
+  bottom: 0;
+  background-repeat: no-repeat;
+  background-position: bottom center;
+  background-size: contain;
+  transform-origin: center bottom;
+  animation: anemone-breathe 4s ease-in-out infinite;
+  opacity: 0.92;
+}
+.anemone-img-1 { left: 14%; bottom: 2%; width: 64px; height: 72px; animation-delay: 0s; }
+.anemone-img-2 { right: 18%; bottom: 1%; width: 56px; height: 64px; animation-delay: -1.2s; animation-duration: 4.5s; }
+@keyframes anemone-breathe {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.18); }
+}
+
+@keyframes starfish-drift {
+  0%, 100% { transform: translateX(0) rotate(var(--starfish-rot, 0deg)); }
+  50% { transform: translateX(10px) rotate(var(--starfish-rot, 0deg)); }
+}
+
+/* 미역 (1.png, 2.png, 3.png 각 2번씩 6개, 흔들림) */
 .seaweed {
   position: absolute;
   bottom: 0;
-  width: 12px;
-  height: 80px;
-  background: linear-gradient(to top, #1a4d2e 0%, #2d6a3e 30%, #3d8b52 70%, #4fa366 100%);
-  border-radius: 50%;
   transform-origin: bottom center;
-  animation: seaweed-sway 4s ease-in-out infinite;
+  animation: seaweed-sway 5.5s ease-in-out infinite;
+  background-repeat: no-repeat;
+  background-position: bottom center;
+  background-size: contain;
+  filter: brightness(1.02);
 }
-.seaweed-1 { left: 8%; height: 70px; animation-delay: 0s; opacity: 0.85; }
-.seaweed-2 { left: 25%; height: 95px; animation-delay: -0.8s; opacity: 0.9; }
-.seaweed-3 { left: 55%; height: 65px; animation-delay: -1.5s; opacity: 0.8; }
-.seaweed-4 { right: 28%; height: 88px; animation-delay: -2.2s; opacity: 0.88; }
-.seaweed-5 { right: 10%; height: 75px; animation-delay: -0.3s; opacity: 0.82; }
+.seaweed-img1 { background-image: url(1.png); width: 80px; height: 182px; }
+.seaweed-img2 { background-image: url(2.png); width: 86px; height: 190px; }
+.seaweed-img3 { background-image: url(3.png); width: 74px; height: 175px; }
+.seaweed-1 { left: 5%; animation-delay: 0s; opacity: 0.9; height: 255px !important; width: 110px !important; }
+.seaweed-2 { left: 20%; animation-delay: -0.8s; opacity: 0.88; }
+.seaweed-3 { left: 46%; animation-delay: -1.5s; opacity: 0.9; }
+.seaweed-4 { right: 22%; animation-delay: -2.2s; opacity: 0.88; height: 260px !important; width: 118px !important; }
+.seaweed-5 { right: 6%; animation-delay: -0.4s; opacity: 0.9; }
+.seaweed-6 { left: 34%; animation-delay: -2.8s; opacity: 0.87; }
 @keyframes seaweed-sway {
-  0%, 100% { transform: skewX(-3deg) rotate(-5deg); }
-  50% { transform: skewX(4deg) rotate(8deg); }
+  0%, 100% { transform: skewX(-5deg) rotate(-10deg) scaleX(1); }
+  28% { transform: skewX(3deg) rotate(4deg) scaleX(1.03); }
+  50% { transform: skewX(6deg) rotate(12deg) scaleX(0.97); }
+  78% { transform: skewX(-3deg) rotate(-5deg) scaleX(1.02); }
 }
 
 /* 공기 방울 */
@@ -437,8 +545,20 @@ body.exhibit-mode .ocean-actions {
 }
 
 #draw-screen {
-  justify-content: flex-start;
-  padding-top: env(safe-area-inset-top);
+  justify-content: center;
+  align-items: center;
+  padding: env(safe-area-inset-top) 1.25rem 1.25rem;
+}
+#draw-screen .draw-layout {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  justify-content: center;
+  gap: 0;
+  max-width: 100%;
+  min-height: 82vh;
+  width: 100%;
+  max-width: 1400px;
 }
 
 .paper-tape {
@@ -504,15 +624,200 @@ body.exhibit-mode .ocean-actions {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
 }
 
+/* 그리기 레이아웃: 왼쪽 팔레트(세로 긴 직사각형, 세로 7개×가로 2열) | 중앙 캔버스 | 오른쪽 도구 */
+.draw-palette {
+  width: 170px;
+  min-height: 560px;
+  flex-shrink: 0;
+  margin-right: -1.25rem;
+  padding: 1.5rem 1rem;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 22px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pencils--grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(7, 1fr);
+  gap: 14px;
+  width: 100%;
+  padding: 0;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+}
+
+.draw-palette .pencil {
+  width: 52px;
+  height: 52px;
+  max-width: 52px;
+  max-height: 52px;
+  justify-self: center;
+  align-self: center;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+}
+.draw-palette .pencil[data-color="#ffffff"] {
+  border-color: rgba(0, 0, 0, 0.35);
+}
+
+/* 팔레트 안에서는 7개씩 2열(왼쪽 7개, 오른쪽 7개) 그리드 고정 — .pencils의 flex 덮어씀 */
+.draw-palette .pencils.pencils--grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(7, 1fr);
+  gap: 14px;
+  padding: 0;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+}
+
+.draw-canvas-block {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.draw-canvas-area {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.draw-canvas-block .draw-actions.draw-canvas-actions {
+  margin-top: 1rem;
+  padding: 0;
+  justify-content: center;
+}
+
+.draw-canvas-block .btn-create-fish {
+  padding: 0.9rem 1.75rem;
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: #fff;
+  background: #3498db;
+  border: none;
+  border-radius: 14px;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.2);
+  animation: create-btn-shine 3s ease-in-out infinite;
+}
+.draw-canvas-block .btn-create-fish:hover {
+  background: #2980b9;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+}
+@keyframes create-btn-shine {
+  0%, 100% { filter: brightness(1); }
+  50% { filter: brightness(1.1); }
+}
+
+.draw-side-tools {
+  width: 165px;
+  min-height: 560px;
+  flex-shrink: 0;
+  margin-left: -1.25rem;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+  gap: 1rem;
+  padding: 1.25rem;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 18px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.draw-side-tools .size-group {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.35rem;
+}
+.draw-side-tools .size-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #3d3629;
+  padding: 0 2px;
+}
+.draw-side-tools .pen-sizes {
+  flex-direction: column;
+  padding: 8px 10px;
+  gap: 6px;
+}
+
+.draw-side-tools .pen-size {
+  padding: 10px 14px;
+  font-size: 1.05rem;
+  text-align: center;
+}
+
+.draw-side-tools .eraser {
+  width: 100%;
+  height: 56px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.draw-side-tools .eraser .eraser-icon {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  pointer-events: none;
+}
+
+.draw-side-tools .eraser-sizes {
+  flex-direction: column;
+  padding: 8px 10px;
+  gap: 6px;
+  display: flex;
+  align-items: stretch;
+}
+.draw-side-tools .eraser-size {
+  padding: 10px 14px;
+  font-size: 1.05rem;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.2s, box-shadow 0.2s;
+}
+.draw-side-tools .eraser-size:hover {
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+.draw-side-tools .eraser-size.active {
+  background: #e8f4fc;
+  border-color: rgba(0, 0, 0, 0.15);
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.06);
+}
+
+.draw-side-tools .btn-clear-inline {
+  width: 100%;
+  height: 52px;
+  padding: 0 1rem;
+  font-size: 1.05rem;
+}
+
 .draw-tools {
   position: relative;
   z-index: 10;
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  gap: 0.75rem;
-  padding: 1rem 1.25rem;
-  margin-bottom: 0.5rem;
+  gap: 1rem;
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 0;
 }
 
 .draw-tools-row {
@@ -531,9 +836,9 @@ body.exhibit-mode .ocean-actions {
 
 .draw-workshop .paper-tray {
   background: rgba(255, 255, 255, 0.95);
-  border-radius: 12px;
-  padding: 1rem 1.25rem;
-  max-width: 600px;
+  border-radius: 14px;
+  padding: 1.25rem 1.75rem;
+  max-width: 720px;
   margin: 0 auto;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
   border: 1px solid rgba(0, 0, 0, 0.08);
@@ -553,20 +858,20 @@ body.exhibit-mode .ocean-actions {
 
 .pencils {
   display: flex;
-  flex-wrap: nowrap;
-  gap: 8px;
-  padding: 8px 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  padding: 10px 14px;
   background: rgba(0, 0, 0, 0.06);
   border-radius: 999px;
   border: 1px solid rgba(0, 0, 0, 0.08);
   width: 100%;
-  justify-content: center;
   min-width: 0;
 }
 
 .pencil {
-  width: 36px;
-  height: 36px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   border: 2px solid transparent;
   background: var(--pencil-color);
@@ -586,20 +891,20 @@ body.exhibit-mode .ocean-actions {
 
 .pen-sizes {
   display: flex;
-  gap: 4px;
-  padding: 6px 10px;
+  gap: 6px;
+  padding: 8px 12px;
   background: rgba(0, 0, 0, 0.05);
-  border-radius: 10px;
+  border-radius: 12px;
   border: 1px solid rgba(0, 0, 0, 0.06);
 }
 
 .pen-size {
-  padding: 6px 14px;
-  font-size: 0.95rem;
+  padding: 8px 18px;
+  font-size: 1.05rem;
   color: #3d3629;
   background: transparent;
   border: 2px solid transparent;
-  border-radius: 6px;
+  border-radius: 8px;
   cursor: pointer;
   transition: background 0.2s, border-color 0.2s;
 }
@@ -615,31 +920,72 @@ body.exhibit-mode .ocean-actions {
 }
 
 .eraser {
-  width: 48px;
-  height: 48px;
-  font-size: 1.5rem;
+  width: 56px;
+  height: 56px;
+  font-size: 1.75rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--paper);
-  border: 1px solid var(--paper-shadow);
-  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
   cursor: pointer;
   transition: background 0.2s, transform 0.15s;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
 }
 
 .eraser:hover,
 .eraser.active {
-  background: var(--paper-dark);
+  background: rgba(255, 255, 255, 1);
   transform: scale(1.05);
+}
+
+.draw-workshop .btn-clear-inline.btn-clear-full {
+  padding: 0 1.25rem;
+  height: 56px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #fff;
+  background: #c0392b;
+  border: 1px solid #a93226;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+.draw-workshop .btn-clear-inline.btn-clear-full:hover {
+  background: #e74c3c;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+.draw-workshop .btn-clear-inline:not(.btn-clear-full) {
+  padding: 0 1.25rem;
+  height: 56px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #3d3629;
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+}
+.draw-workshop .btn-clear-inline:not(.btn-clear-full):hover {
+  background: #fff;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
 .canvas-wrap {
   position: relative;
   z-index: 5;
-  padding: 1rem;
+  padding: 1.5rem;
   margin: 0 auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.draw-workshop .canvas-wrap {
+  padding: 1.75rem;
 }
 
 .draw-canvas-bg {
@@ -647,8 +993,8 @@ body.exhibit-mode .ocean-actions {
   top: 1.25rem;
   left: 50%;
   transform: translateX(-50%);
-  width: 400px;
-  height: 300px;
+  width: 560px;
+  height: 420px;
   max-width: calc(100% - 2rem);
   z-index: 0;
   border-radius: 2px;
@@ -668,6 +1014,10 @@ body.exhibit-mode .ocean-actions {
   border: 1px solid rgba(0, 0, 0, 0.08);
 }
 
+.draw-workshop .paper-sheet.paper-sheet {
+  padding: 1.5rem;
+  max-width: 640px;
+}
 .paper-sheet {
   background: var(--paper);
   padding: 1.25rem;
@@ -719,7 +1069,8 @@ body.exhibit-mode .ocean-actions {
 }
 
 .draw-workshop .draw-actions {
-  padding: 1rem 1.25rem;
+  padding: 1.25rem 1.5rem;
+  max-width: 560px;
 }
 
 .draw-workshop .draw-actions.paper-tape {
@@ -745,13 +1096,13 @@ body.exhibit-mode .ocean-actions {
 }
 
 .draw-workshop .btn-primary {
-  padding: 0.8rem 2rem;
-  font-size: 1.1rem;
+  padding: 1rem 2.5rem;
+  font-size: 1.25rem;
   letter-spacing: 0.08em;
   color: #fff;
   background: linear-gradient(180deg, var(--start-coral-hover) 0%, var(--start-coral) 100%);
   border: none;
-  border-radius: 8px;
+  border-radius: 12px;
   box-shadow: 0 2px 0 rgba(0, 0, 0, 0.1), 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
@@ -759,6 +1110,33 @@ body.exhibit-mode .ocean-actions {
   background: linear-gradient(180deg, #c0392b 0%, #e74c3c 100%);
   transform: translateY(-1px);
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+/* CREATE FISH 버튼: 상하 그라데이션 + 네온 빛 모션 */
+.draw-workshop .draw-canvas-block .btn-create-fish.btn-primary {
+  background: linear-gradient(180deg, #5dade2 0%, #3498db 35%, #2980b9 70%, #1a5276 100%) !important;
+  background-size: 100% 200% !important;
+  color: #fff !important;
+  box-shadow:
+    0 0 8px rgba(52, 152, 219, 0.6),
+    0 0 14px rgba(52, 152, 219, 0.35),
+    0 0 22px rgba(52, 152, 219, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25),
+    0 4px 15px rgba(0, 0, 0, 0.2);
+  animation: create-fish-neon 2.5s ease-in-out infinite;
+}
+.draw-workshop .draw-canvas-block .btn-create-fish.btn-primary:hover {
+  animation: create-fish-neon 1.2s ease-in-out infinite;
+  box-shadow:
+    0 0 10px rgba(52, 152, 219, 0.7),
+    0 0 18px rgba(52, 152, 219, 0.4),
+    0 0 28px rgba(52, 152, 219, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3),
+    0 6px 20px rgba(0, 0, 0, 0.25);
+}
+@keyframes create-fish-neon {
+  0%, 100% { background-position: 0% 0%; filter: brightness(1); }
+  50% { background-position: 0% 100%; filter: brightness(1.12); }
 }
 
 .btn-secondary {
@@ -830,6 +1208,30 @@ body.exhibit-mode .ocean-actions {
 }
 
 /* ===== 반응형 ===== */
+@media (max-width: 768px) {
+  #draw-screen .draw-layout {
+    flex-direction: column;
+    min-height: auto;
+  }
+  .draw-palette {
+    width: 100%;
+    max-width: 320px;
+    min-height: 360px;
+  }
+  .draw-palette .pencil {
+    max-width: 28px;
+    max-height: 28px;
+  }
+  .draw-side-tools {
+    width: 100%;
+    max-width: 280px;
+    min-height: auto;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+}
+
 @media (max-width: 480px) {
   .draw-tools {
     gap: 0.75rem;
@@ -839,11 +1241,21 @@ body.exhibit-mode .ocean-actions {
     width: 32px;
     height: 32px;
   }
+  .draw-palette .pencil {
+    max-width: 22px;
+    max-height: 22px;
+  }
 
   #draw-canvas {
     width: 100%;
-    max-width: 340px;
+    max-width: 100%;
     height: auto;
+  }
+  .draw-canvas-bg {
+    width: 100%;
+    height: auto;
+    max-width: 340px;
+    aspect-ratio: 4/3;
   }
 
   .draw-actions {
